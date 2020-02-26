@@ -40,7 +40,7 @@ $rsConsulta = mysql_query($select);
                                         </thead>
                                         <tbody>
 											<?
-											 if(mysql_num_rows($rsConsulta){
+											 if(mysql_num_rows($rsConsulta)){
                                                  while($rConsulta=mysql_fetch_array($rsConsulta)){
 												?>
 											<tr>
