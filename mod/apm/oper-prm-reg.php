@@ -88,7 +88,7 @@ $rPromotoria = mysql_fetch_array($rsPromotoria);
     <div class="tab-pane tabs-animation fade" id="tab-content-1" role="tabpanel">
         <div class="row">
             <div class="col-md-12">
-                <div class="main-card mb-3 col-md-4 card">
+                <div class="main-card mb-3 card">
                     <div class="card-body">
                         <h5 class="card-title">Supervisores</h5>
                         <div class="table-responsive">
@@ -106,7 +106,10 @@ $rPromotoria = mysql_fetch_array($rsPromotoria);
                         </div>
                     </div>
                 </div>
-                <div class="main-card mb-3 col-md-4 card">
+            </div>
+            <div class="col-md-12">
+               
+                <div class="main-card mb-3 card">
                     <div class="card-body">
                         <h5 class="card-title">Promotores</h5>
                         <div class="table-responsive">
@@ -124,7 +127,12 @@ $rPromotoria = mysql_fetch_array($rsPromotoria);
                         </div>
                     </div>
                 </div>
-                <div class="main-card mb-3 col-md-4 card">
+               
+                
+            </div>
+            <div class="col-md-12">
+                
+                <div class="main-card mb-3 card">
                     <div class="card-body">
                         <h5 class="card-title">Usuarios Marca</h5>
                         <div class="table-responsive">
@@ -144,7 +152,6 @@ $rPromotoria = mysql_fetch_array($rsPromotoria);
                 </div>
                 
             </div>
-            
         </div>
     </div>
 </div>

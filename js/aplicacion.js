@@ -413,7 +413,7 @@ function agregarFilaTienda(indice)
         else
         {
            
-    var table = document.getElementById("invs");
+    var table = document.getElementById("tiendas");
     var row = table.insertRow(x);
     row.id="tie"+(indice);
     row.innerHTML = '<td><i class="far fa-trash-alt" onclick="deleteRow(\'tie'+indice+'\',\'tiendas\')"></i></td>';
