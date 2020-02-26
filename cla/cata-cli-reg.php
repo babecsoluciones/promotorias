@@ -28,7 +28,7 @@ $data = json_decode( file_get_contents('php://input') );
         $tCorreo                = $data->tCorreo ? "'".$data->tCorreo."'" : false;
         $tTelefonoFijo          = $data->tTelefonoFijo ? "'".$data->tTelefonoFijo."'" : false;
         $tTelefonoMovil         = $data->tTelefonoMovil ? "'".$data->tTelefonoMovil."'" : false;
-        $tComentarios           = $data->tComentarios ? "'".$data->tComentarios."'" : "'Sin comentarios'";
+        $tComentarios           = $data->tComentarios ? "'".utf8_encode($data->tComentarios)."'" : "'Sin comentarios'";
 		$eCodUsuario            = $_SESSION['sessionAdmin']['eCodUsuario'];
 		$fhFechaCreacion        = "'".date('Y-m-d H:i')."'";
 
