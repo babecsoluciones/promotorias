@@ -19,7 +19,7 @@ $select =   " SELECT cc.tNombre tCliente, bp.eCodPromotoria, ".
             " INNER JOIN RelPromotoriasPromotores pp ON pp.eCodPromotoria = bp.eCodPromotoria ".
             " INNER JOIN RelPromotoriasSupervisores ON ps.eCodPromotoria = bp.eCodPromotoria ".
             " WHERE DATE(bp.fhFechaPromotoria) >= '".date('Y-m-d H:i:s')."'".
-            ($bAll ? "" : " AND ".$_SESSION['sessionAdmin']['eCodUsuario']." IN pc.eCodUsuario, pp.eCodUsuario, ps.eCodUsuario ");
+            ($bAll ? "" : " AND ".$_SESSION['sessionAdmin']['eCodUsuario']." IN pc.eCodUsuario, pp.eCodPromotor, ps.eCodSupervisor ");
 $rsConsulta = mysql_query($select);
 
 ?>
