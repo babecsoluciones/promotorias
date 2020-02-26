@@ -389,107 +389,36 @@ function agregarFilaExtra(indice)
         
     }
 
-//inventario
-
-function calcularTotalInventario(indice)
-{
-   var eCodInventario    =   document.getElementById('inventario'+indice+'-eCodInventario'),
-            ePiezas        =   document.getElementById('inventario'+indice+'-ePiezas'),
-            dImporte = document.getElementById('inventario'+indice+'-dImporte'),
-            dMonto = document.getElementById('inventario'+indice+'-dMonto');
-        
-        if(eCodInventario.value && ePiezas.value)
-            {
-                dMonto.value = parseInt(ePiezas.value)*parseInt(dImporte.value);   
-            } 
-}
+//tienda
 
 function validarInventario(indice)
     {
-        var eCodInventario    =   document.getElementById('inventario'+indice+'-eCodInventario'),
-            ePiezas        =   document.getElementById('inventario'+indice+'-ePiezas'),
-            dImporte = document.getElementById('inventario'+indice+'-dImporte'),
-            dMonto = document.getElementById('inventario'+indice+'-dMonto'),
+        var eCodTienda    =   document.getElementById('eCodTienda'+indice),
             nIndice         =   parseInt(indice)+1;
         
-        if(eCodInventario.value && ePiezas.value)
+        if(eCodTienda.value)
             {
-                dMonto.value = parseInt(ePiezas.value)*parseInt(dImporte.value);
-                agregarFilaInventarioCotizacion(nIndice);    
+                agregarFilaTienda(nIndice);    
             }
     }
     
-function agregarFilaInventarioCotizacion(indice)
+function agregarFilaTienda(indice)
     {
-        var x = document.getElementById("invs").rows.length;
+        var x = document.getElementById("tiendas").rows.length;
         
         
-        var tExtra = document.getElementById('inventario'+indice+'-eCodInventario');
-        if(tExtra)
+        var eCodTienda = document.getElementById('eCodTienda'+indice);
+        if(eCodTienda)
             {}
         else
         {
            
     var table = document.getElementById("invs");
     var row = table.insertRow(x);
-    row.id="inv"+(indice);
-    row.innerHTML = '<td><i class="far fa-trash-alt" onclick="deleteRow(\'inv'+indice+'\',\'invs\')"></i></td>';
-    row.innerHTML += '<td><input type="checkbox" id="inventario'+indice+'-bSuma" name="inventario['+indice+'][bSuma]" value="1" onclick="calcular();"></td><td><input type="hidden" id="inventario'+indice+'-eCodInventario" name="inventario['+indice+'][eCodInventario]"><input type="text" class="form-control" id="tInventario'+indice+'" name="tInventario'+indice+'" onkeyup="agregarInventario('+indice+')" onkeypress="agregarInventario('+indice+')" onblur="validarInventario('+indice+')"></td>';
-    row.innerHTML += '<td><input type="hidden" id="inventario'+indice+'-eMaxPiezas"><input type="hidden" id="inventario'+indice+'-dImporte" name="inventario['+indice+'][dImporte]"><input type="text" class="form-control" id="inventario'+indice+'-ePiezas" name="inventario['+indice+'][ePiezas]" onkeyup="validarPiezas(\'inventario'+indice+'\'); validarInventario('+indice+')" onblur="validarInventario('+indice+')"></td><td><input type="text"  id="inventario'+indice+'-dMonto" name="inventario['+indice+'][dMonto]" readonly></td>';
+    row.id="tie"+(indice);
+    row.innerHTML = '<td><i class="far fa-trash-alt" onclick="deleteRow(\'tie'+indice+'\',\'tiendas\')"></i></td>';
+    row.innerHTML += '<td><input type="hidden" id="eCodTienda'+indice+'" name="tiendas['+indice+'][eCodTienda]">';
+    row.innerHTML += '<input type="text" class="form-control" id="tTienda'+indice+'" name="tiendas['+indice+'][tTienda]" onkeyup="agregarTienda('+indice+')" onkeypress="agregarTienda('+indice+')" onblur="validarTienda('+indice+')"></td>';
         }
-        
-    calcular();
-        
-    }
-
-//paquetes
-function calcularTotalPaquete(indice)
-    {
-        var eCodServicio    =   document.getElementById('paquete'+indice+'-eCodServicio'),
-            ePiezas        =   document.getElementById('paquete'+indice+'-ePiezas'),
-            dImporte = document.getElementById('paquete'+indice+'-dImporte'),
-            dMonto = document.getElementById('paquete'+indice+'-dMonto');
-        
-        if(eCodServicio.value && ePiezas.value)
-            {
-                dMonto.value = parseInt(ePiezas.value)*parseInt(dImporte.value);
-            }
-    }
-
-function validarPaquete(indice)
-    {
-        var eCodServicio    =   document.getElementById('paquete'+indice+'-eCodServicio'),
-            ePiezas        =   document.getElementById('paquete'+indice+'-ePiezas'),
-            dImporte = document.getElementById('paquete'+indice+'-dImporte'),
-            dMonto = document.getElementById('paquete'+indice+'-dMonto'),
-            nIndice         =   parseInt(indice)+1;
-        
-        if(eCodServicio.value && ePiezas.value)
-            {
-                dMonto.value = parseInt(ePiezas.value)*parseInt(dImporte.value);
-                agregarFilaPaqueteCotizacion(nIndice);    
-            }
-    }
-    
-function agregarFilaPaqueteCotizacion(indice)
-    {
-        var x = document.getElementById("paquetes").rows.length;
-        
-        
-        var tExtra = document.getElementById('paquete'+indice+'-eCodServicio');
-        if(tExtra)
-            {}
-        else
-        {
-           
-    var table = document.getElementById("paquetes");
-    var row = table.insertRow(x);
-    row.id="paq"+(indice);
-    row.innerHTML = '<td><i class="far fa-trash-alt" onclick="deleteRow(\'paq'+indice+'\',\'paquetes\')"></i></td>';
-    row.innerHTML += '<td><input type="checkbox" id="paquete'+indice+'-bSuma" name="paquete['+indice+'][bSuma]" value="1" onclick="calcular();"><i class="fas fa-info-circle" onclick="asignarPaquete('+indice+')"></i></td><td><input type="hidden" id="paquete'+indice+'-eCodServicio" name="paquete['+indice+'][eCodServicio]"><input type="text" class="form-control" id="tPaquete'+indice+'" name="tPaquete'+indice+'" onkeyup="agregarPaquete('+indice+')" onkeypress="agregarPaquete('+indice+')" onblur="validarPaquete('+indice+')"></td>';
-    row.innerHTML += '<td><input type="hidden" id="paquete'+indice+'-eMaxPiezas"><input type="hidden" id="paquete'+indice+'-dImporte" name="paquete['+indice+'][dImporte]"><input type="text" class="form-control" id="paquete'+indice+'-ePiezas" name="paquete['+indice+'][ePiezas]" onkeyup="validarPiezas(\'paquete'+indice+'\'); validarpaquete('+indice+')" onblur="validarPaquete('+indice+')"></td><td><input type="text" id="paquete'+indice+'-dMonto" name="paquete['+indice+'][dMonto]" readonly></td>';
-        }
-        
-    calcular();
         
     }
