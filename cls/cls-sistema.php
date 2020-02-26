@@ -19,6 +19,10 @@ class clSis
 		$select = "SELECT * FROM SisUsuarios WHERE eCodEstatus=3 AND tCorreo = $tCorreo AND tPasswordAcceso = $tPasswordAcceso";
 		$rsUsuario = mysql_query($select);
 		$rUsuario = mysql_fetch_array($rsUsuario);
+        
+        $pf = fopen("inicio.txt","a");
+            fwrite($pf,$select."\n\n");
+            fclose($pf);
 		
 		if($rsUsuario)
 		{
@@ -28,9 +32,9 @@ class clSis
             
             mysql_query("INSERT INTO SisUsuariosAccesos (eCodUsuario, fhFecha) VALUES (".$rUsuario{'eCodUsuario'}.",'".date('Y-m-d H:i:s')."')");
             
-            //$pf = fopen("inicio.txt","a");
-            //fwrite($pf,base64_decode($url));
-            //fclose($pf);
+            $pf = fopen("inicio.txt","a");
+            fwrite($pf,base64_decode($url));
+            fclose($pf);
             
 			return array('exito'=>1,'seccion'=>$url);
 		}

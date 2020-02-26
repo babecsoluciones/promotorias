@@ -44,7 +44,6 @@ function validar()
 var bandera = false;
 var mensaje = "";
 var tNombre = document.getElementById("tNombre");
-var tApellidos = document.getElementById("tApellidos");
 var tCorreo = document.getElementById("tCorreo");
 var tTelefonoFijo = document.getElementById("tTelefonoFijo");
 var tTelefonoMovil = document.getElementById("tTelefonoMovil");
@@ -54,11 +53,7 @@ var tTelefonoMovil = document.getElementById("tTelefonoMovil");
         mensaje += "* Nombre\n";
         bandera = true;
     };
-    if(!tApellidos.value)
-    {
-        mensaje += "* Apellidos\n";
-        bandera = true;
-    };
+    
     if(!tCorreo.value)
     {
         mensaje += "* E-mail\n";
@@ -105,10 +100,6 @@ var tTelefonoMovil = document.getElementById("tTelefonoMovil");
            <div class="form-group">
               <label>Nombre</label>
               <input type="text" class="form-control" name="tNombre" id="tNombre" placeholder="Nombre" value="<?=utf8_decode($rPublicacion{'tNombres'})?>" >
-           </div>
-           <div class="form-group">
-              <label>Apellidos</label>
-              <input type="text" class="form-control" name="tApellidos" id="tApellidos" placeholder="Apellidos" value="<?=utf8_decode($rPublicacion{'tApellidos'})?>" >
            </div>
            <div class="form-group">
               <label>E-mail</label>

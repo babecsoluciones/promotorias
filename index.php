@@ -34,7 +34,7 @@ if(!$_SESSION['sessionAdmin'] || !$_GET['tCodSeccion'] || !$clSistema->validarSe
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="Content-Language" content="en">
     
-    <title>S.G.E. Dashboard [<?=$clSistema->tituloSeccion($_GET['tCodSeccion']);?>]</title>
+    <title>S.G.P. Dashboard [<?=$clSistema->tituloSeccion($_GET['tCodSeccion']);?>]</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
     <meta name="description" content="Sistema de Gestión de Eventos">
     <meta name="msapplication-tap-highlight" content="no">
@@ -1491,15 +1491,7 @@ if(!$_SESSION['sessionAdmin'] || !$_GET['tCodSeccion'] || !$clSistema->validarSe
           
           
           
-          if(document.getElementById('frmCalendario') && document.getElementById('calendario'))
-              {
-                  cambiarFecha(<?=date('m');?>,<?=date('Y');?>,1);
-              }
           
-          if(document.getElementById('datos') && document.getElementById('calendario'))
-              {
-                  cambiarFechaEvento(<?=date('m');?>,<?=date('Y');?>);
-              }
           
          $('#cliTable tfoot th').each( function () {
         var title = $(this).text();

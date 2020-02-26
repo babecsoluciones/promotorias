@@ -34,8 +34,8 @@ $data = json_decode( file_get_contents('php://input') );
         if(!$tNombre)
             $errores[] = 'El nombre es obligatorio';
 
-        if(!$tApellidos)
-            $errores[] = 'Los Apellidos es obligatorio';
+        //if(!$tApellidos)
+        //    $errores[] = 'Los Apellidos es obligatorio';
 
         if(!$tCorreo)
             $errores[] = 'El e-mail es obligatorio';
@@ -54,7 +54,6 @@ $data = json_decode( file_get_contents('php://input') );
             $insert = " INSERT INTO CatClientes
             (
             tNombres,
-            tApellidos,
             tCorreo,
             tTelefonoFijo,
             tTelefonoMovil,
@@ -66,7 +65,6 @@ $data = json_decode( file_get_contents('php://input') );
             VALUES
             (
             $tNombre,
-            $tApellidos,
             $tCorreo,
             $tTelefonoFijo,
             $tTelefonoMovil,
@@ -84,7 +82,6 @@ $data = json_decode( file_get_contents('php://input') );
                             CatClientes
                         SET
                             tNombres= $tNombre,
-                            tApellidos= $tApellidos,
                             tCorreo= $tCorreo,
                             tTelefonoFijo= $tTelefonoFijo,
                             tTelefonoMovil= $tTelefonoMovil,

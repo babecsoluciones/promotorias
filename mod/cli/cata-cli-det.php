@@ -10,19 +10,14 @@ $rCliente = mysql_fetch_array($rsCliente);
 <div class="row">
                             <div class="col-lg-12">
                                 
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                 <div class="form-group">
                                     
                                     <label>Nombre(s)</label>
               <?=$rCliente{'tNombres'}?>
                                     </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                    <label>Apellido(s)</label>
-              <?=$rCliente{'tApellidos'}?>
-                                    </div>
-                                </div>
+                                    
                                 <div class="col-md-12">
                                 <div class="form-group">
                                     <label>E-mail</label>

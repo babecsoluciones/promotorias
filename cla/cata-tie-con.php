@@ -28,7 +28,7 @@ $codigo = $data->eCodAccion ? $data->eCodAccion : $data->eAccion;
 $accion = $data->tCodAccion ? $data->tCodAccion : $data->tAccion;
 
 
-$eCodCliente = $data->eCodCliente ? $data->eCodCliente : false;
+$eCodTienda = $data->eCodTienda ? $data->eCodTienda : false;
 $eCodEstatus = $data->eCodEstatus ? $data->eCodEstatus : false;
 
 $terms = explode(" ",$data->tNombres);
@@ -56,20 +56,10 @@ $rdOrden = $data->rdOrden ? $data->rdOrden : 'eCodCliente';
 switch($accion)
 {
     case 'D':
-        $select = "SELECT * FROM BitEventos WHERE eCodCliente = ".$_GET['eCodCliente'];
-            $rs = mysql_query($select);
-            
-            if(mysql_num_rows($rs)>0)
-            {
-                $insert = "UPDATE CatClientes SET eCodEstatus=7 WHERE eCodCliente = ".$codigo;
-            }
-            else
-            {
-                $insert = "DELETE FROM CatClientes WHERE eCodCliente = ".$codigo;
-            }
+                $insert = "UPDATE CatTiendas SET eCodEstatus=7 WHERE eCodTienda = ".$codigo;
         break;
     case 'F':
-        $insert = "UPDATE CatClientes SET eCodEstatus = 8 WHERE eCodCliente = ".$codigo;
+        $insert = "UPDATE CatTiendas SET eCodEstatus = 8 WHERE eCodTienda = ".$codigo;
         break;
     case 'C':
         $tHTML =  '<table class="table table-hover" width="100%">'.
@@ -78,26 +68,20 @@ switch($accion)
         '<th>C&oacute;digo</th>'.
 		'<th>E</th>'.
         '<th>Nombre</th>'.
-        '<th class="text-left">Correo</th>'.
-        '<th class="text-left">Tel&eacute;fono</th>'.
         '</tr>'.
         '</thead>'.
         '<tbody>';
         /* hacemos select */
         $select = "SELECT * FROM (SELECT 
 		cc.*, 
-		ce.tIcono as estatus,
-		su.tNombre as promotor
+		ce.tIcono as estatus
 		FROM
-			CatClientes cc
+			CatTiendas cc
 		INNER JOIN CatEstatus ce ON cc.eCodEstatus = ce.eCodEstatus
-		LEFT JOIN SisUsuarios su ON su.eCodUsuario = cc.eCodUsuario
         WHERE 1=1".
         ($_SESSION['sessionAdmin']['bAll'] ? "" : " AND cc.eCodEstatus<> 7").
-		($bAll ? "" : " AND cc.eCodUsuario = ".$_SESSION['sessionAdmin']['eCodUsuario']).
-        ($eCodCliente ? " AND cc.eCodCliente = ".$eCodCliente : "").
-        ($data->tNombres    ?   $termino    :   "").
-        ($data->tApellidos  ?   $termino2   :   "").
+        ($eCodTienda ? " AND cc.eCodTienda = ".$eCodTienda : "").
+        ($data->tNombre    ?   $termino    :   "").
         " ORDER BY cc.$rdOrden $bOrden".
         " LIMIT 0, $eLimit ".
 		")N0 ";
@@ -106,12 +90,9 @@ switch($accion)
         while($rConsulta=mysql_fetch_array($rsConsulta)){
             //imprimimos
        $tHTML .=    '<tr>'.
-        '<td>'.menuEmergenteJSON($rConsulta{'eCodCliente'},'cata-cli-con').'</td>'.
+        '<td>'.menuEmergenteJSON($rConsulta{'eCodTienda'},'cata-tie-con').'</td>'.
         '<td><i class="'.$rConsulta{'estatus'}.'"></i></td>'.
-        '<td>'.utf8_encode($rConsulta{'tTitulo'}).''.utf8_encode($rConsulta{'tNombres'}).'</td>'.
-		'<td>'.utf8_encode($rConsulta{'tApellidos'}).'</td>'.
-		'<td>'.utf8_encode($rConsulta{'tCorreo'}).'</td>'.
-		'<td>'.utf8_encode($rConsulta{'tTelefonoFijo'}).'</td>'.
+        '<td>'.utf8_encode($rConsulta{'tNombre'}).'</td>'.
                     '</tr>';
             //imprimimos
         }
@@ -132,7 +113,7 @@ if($accion=="D" || $accion=="F")
 
     if(!sizeof($errores))
     {
-        $tDescripcion = "Se ha ".(($accion=="D") ? 'Eliminado' : 'Finalizado')." el cliente c√≥digo ".sprintf("%07d",$codigo);
+        $tDescripcion = "Se ha ".(($accion=="D") ? 'Eliminado' : 'Finalizado')." el cliente c®Ædigo ".sprintf("%07d",$codigo);
         $tDescripcion = "'".utf8_encode($tDescripcion)."'";
         $fecha = "'".date('Y-m-d H:i:s')."'";
         $eCodUsuario = $_SESSION['sessionAdmin']['eCodUsuario'];
