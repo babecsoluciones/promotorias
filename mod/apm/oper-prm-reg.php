@@ -90,6 +90,21 @@ $rPromotoria = mysql_fetch_array($rsPromotoria);
             <div class="col-md-12">
                 <div class="main-card mb-3 card">
                     <div class="card-body">
+                        <h5 class="card-title">Productos</h5>
+                        <div class="table-responsive">
+                            
+                                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane tabs-animation fade" id="tab-content-2" role="tabpanel">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="main-card mb-3 card">
+                    <div class="card-body">
                         <h5 class="card-title">Supervisores</h5>
                         <div class="table-responsive">
                             <table class="table table-hover" id="supervisores" width="100%">
@@ -107,7 +122,7 @@ $rPromotoria = mysql_fetch_array($rsPromotoria);
                     </div>
                 </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-4">
                
                 <div class="main-card mb-3 card">
                     <div class="card-body">
@@ -130,7 +145,7 @@ $rPromotoria = mysql_fetch_array($rsPromotoria);
                
                 
             </div>
-            <div class="col-md-12">
+            <div class="col-md-4">
                 
                 <div class="main-card mb-3 card">
                     <div class="card-body">

@@ -417,8 +417,7 @@ function agregarFilaTienda(indice)
     var row = table.insertRow(x);
     row.id="tie"+(indice);
     row.innerHTML = '<td><i class="far fa-trash-alt" onclick="deleteRow(\'tie'+indice+'\',\'tiendas\')"></i></td>';
-    row.innerHTML += '<td><input type="hidden" id="eCodTienda'+indice+'" name="tiendas['+indice+'][eCodTienda]">';
-    row.innerHTML += '<input type="text" class="form-control" id="tTienda'+indice+'" name="tiendas['+indice+'][tTienda]" onkeyup="agregarTienda('+indice+')" onkeypress="agregarTienda('+indice+')" onblur="validarTienda('+indice+')"></td>';
+    row.innerHTML += '<td><input type="hidden" id="eCodTienda'+indice+'" name="tiendas['+indice+'][eCodTienda]"><input type="text" class="form-control" id="tTienda'+indice+'" name="tiendas['+indice+'][tTienda]" onkeyup="agregarTienda('+indice+')" onkeypress="agregarTienda('+indice+')" onblur="validarTienda('+indice+')"></td>';
         }
         
     }
