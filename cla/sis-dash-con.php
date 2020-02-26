@@ -12,168 +12,61 @@ if (isset($_SERVER{'HTTP_ORIGIN'})) {
     }
 
 
-session_start();
-
 require_once("../cnx/swgc-mysql.php");
 include("../inc/fun-ini.php");
-require_once("../cls/cls-sistema.php");
 
-$clSistema = new clSis();
 session_start();
+$bAll = $_SESSION['bAll'];
+$bDelete = $_SESSION['bAll'];
+
 
 $bAll = $_SESSION['bAll'];
 $bDelete = $_SESSION['bDelete'];
 
 date_default_timezone_set('America/Mexico_City');
 
-$errores = array();
 
-$eventos = array();
-$rentas = array();
 
 $hoy = "'".date('Y-m-d H:i:s')."'";
 
 $data = json_decode( file_get_contents('php://input') );
 
-//$url = 'window.location=\''.obtenerURL().'ser/cata-eve-det/detalles-catalogo-eventos/v1/'.sprintf("%07d",$datos{'eCodEvento'});
+$select =   " SELECT cc.tNombre tCliente, bp.eCodPromotoria, ".
+            " bp.fhFechaPromotoria, ce.tIcono estatus".
+            " FROM BitPromotoria bp ".
+            " INNER JOIN CatClientes cc ON cc.eCodCliente = bp.eCodCliente ".
+            " INNER JOIN CatEstatus ce ON ce.eCodEstatus = bp.eCodEstatus ".
+            " INNER JOIN RelPromotoriasClientes pc ON pc.eCodPromotoria = bp.eCodPromotoria ".
+            " INNER JOIN RelPromotoriasPromotores pp ON pp.eCodPromotoria = bp.eCodPromotoria ".
+            " INNER JOIN RelPromotoriasSupervisores ON ps.eCodPromotoria = bp.eCodPromotoria ".
+            " WHERE DATE(bp.fhFechaPromotoria) >= '".date('Y-m-d H:i:s')."'".
+            ($bAll ? "" : " AND ".$_SESSION['sessionAdmin']['eCodUsuario']." IN pc.eCodUsuario, pp.eCodUsuario, ps.eCodUsuario ");
+$rsConsulta = mysql_query($select);
 
-function generarMenuEmergente($datos)
-{
-    $tHTML = '<div class="btn-group" style="width:100%;">'.
-                '<button type="button" class="btn btn-secondary dropdown-toggle form-control" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Acciones...</button>'.
-                '<div class="dropdown-menu">'.
-                '<a class="dropdown-item" href="#" onclick="consultarDetalle('.$datos{'eCodEvento'}.')"><i class="fa fa-eye"></i> Detalles</a>'.
-                '<a class="dropdown-item" href="#" onclick="generarPDF(\''.sprintf("%07d",$datos{'eCodEvento'}).'\')"><i class="far fa-file-pdf"></i> PDF</a>'.
-                '<a class="dropdown-item" href="#" onclick="agregarTransaccion('.$datos{'eCodEvento'}.')" data-toggle="modal" data-target="#myModal"><i class="fas fa-dollar-sign"></i> Nueva Transacci&oacute;n</a>'.
-                ($datos['activa'] ? '<div class="dropdown-divider"></div>' : '').
-                ($datos['activa'] ? '<a class="dropdown-item" href="#" onclick="agregarOperador('.$datos{'eCodEvento'}.')" data-toggle="modal" data-target="#myModalOperador" '.$datos['activa'].'><i class="fas fa-cog"></i> Configurar</a>' : '').
-                ($datos['activa'] ? '<a class="dropdown-item" href="#" onclick="generarMaestra(\''.sprintf("%07d",$datos{'eCodEvento'}).'\')"'.$datos['activa'].'><i class="far fa-file-pdf"></i> Descargar Maestra</a>' : '').
-                '</div>'.
-                '</div>';
-    
-    return $tHTML;
-}
+$tHTML =  '<table class="table table-hover" width="100%">'.
+        '<thead>'.
+        '<tr>'.
+        '<th>C&oacute;digo</th>'.
+		'<th>E</th>'.
+        '<th>Cliente</th>'.
+        '<th class="text-left">Fecha</th>'.
+        '</tr>'.
+        '</thead>'.
+        '<tbody>';
 
-function generarCuadro($datos)
-{
-    $html = '<div class="col-md-12">
-                                <div class="card border border-primary" '.$datos['tColor'].'>
-                                    <div class="card-header">
-                                        <strong class="card-title">
-                                         <i class="'.$datos{'tIcono'}.'"></i> '.$datos{'nombreCliente'}.' '.$datos{'apellidosCliente'}.'
-                                        </strong>
-                                    </div>
-                                    <div class="card-body">
-                                        <p class="card-text"><b>Promotor: '.$datos{'promotor'}.'</b></p>
-                                        <p class="card-text">
-                                            Direcci&oacute;n: '.base64_decode($datos{'tDireccion'}).'<br>
-                                            Estatus: <i class="'.$datos{'tIcono'}.'"></i> '.$datos{'Estatus'}.'<br>
-                                            Fecha: '.date('d/m/Y H:i',strtotime($datos{'fhFechaEvento'})).'<br>
-                                           
-                                        </p>
-                                        <br>
-                                        '.generarMenuEmergente($datos).'
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="clearfix" style="height:15px;"></div>';
-    
-    return $html;
-}
+    while($rConsulta=mysql_fetch_array($rsConsulta)){
+            //imprimimos
+       $tHTML .=    '<tr>'.
+        '<td>'.menuEmergenteJSON($rConsulta{'eCodPromotoria'},'sis-dash-con').'</td>'.
+        '<td><i class="'.$rConsulta{'estatus'}.'"></i></td>'.
+        '<td>'.utf8_encode($rConsulta{'tCliente'}).'</td>'.
+		'<td>'.date('d/m/Y',strtotime($rConsulta{'fhFechaPromotoria'})).'</td>'.
+                    '</tr>';
+            //imprimimos
+        }
 
-$fhFechaConsulta = $data->fhFechaConsulta ? explode("/",$data->fhFechaConsulta) : false;
+$tHTML .= '</tbody></table>';
 
-$fhFecha = $fhFechaConsulta[2].'-'.$fhFechaConsulta[1].'-'.$fhFechaConsulta[0];
-
-//Fechas
-$fhFechaInicio = $data->fhFechaConsulta ? date('Y-m-d',strtotime($fhFecha)).' 00:00:00' : date('Y-m-d').' 00:00:00';
-$fhFechaTermino = $data->fhFechaConsulta ? date('Y-m-d',strtotime($fhFecha)).' 23:59:59' : date('Y-m-d').' 23:59:59';
-
-//consulta eventos
-$select = "SELECT be.*, cc.tNombres nombreCliente, cc.tApellidos apellidosCliente,
-															su.tNombre as promotor, ce.tNombre Estatus, ce.tIcono, ce.tColor, TIMESTAMPDIFF(HOUR,$hoy,be.fhFechaEvento) Diferencia 
-                                                            FROM BitEventos be INNER JOIN CatClientes cc ON cc.eCodCliente = be.eCodCliente
-															INNER JOIN CatEstatus ce ON ce.eCodEstatus = be.eCodEstatus
-														LEFT JOIN SisUsuarios su ON su.eCodUsuario = be.eCodUsuario
-                                                        WHERE
-                                                        be.fhFechaEvento >= '$fhFechaInicio' AND be.fhFechaEvento<='$fhFechaTermino'".
-                                                        " AND be.eCodEstatus<>4".
-                                                        " AND be.eCodTipoDocumento=1".
-                                                        " AND cc.eCodCliente <> 1".
-												        ($bAll ? "" : " AND cc.eCodUsuario = ".$_SESSION['sessionAdmin']['eCodUsuario']).
-														" ORDER BY be.fhFechaEvento DESC";
-
-
-
-
-
-$rsEventos = mysql_query($select);
-while($rEvento = mysql_fetch_array($rsEventos))
-                                                    {
-                                                    
-                                                    $tColor='';
-                                                    if($rEvento{'eCodEstatus'}==1 && $rEvento{'Diferencia'}<=168) { $tColor = 'style="background:#eb8f34;"';}
-                                                    if($rEvento{'eCodEstatus'}==2) { $tColor = 'style="background:'.$rEvento{'tColor'}.';"';}
-                                                    
-                                                        $activa = $_SESSION['sessionAdmin']['bAll'] ? true : false;
-                                                       
-                                                    $datos = array(
-                                                                    'tColor'=>$tColor,
-                                                                    'tIcono'=>$rEvento{'tIcono'},
-                                                                    'nombreCliente'=>$rEvento{'nombreCliente'},
-                                                                    'apellidosCliente'=>$rEvento{'apellidosCliente'},
-                                                                    'promotor'=>$rEvento{'promotor'},
-                                                                    'tDireccion'=>$rEvento{'tDireccion'},
-                                                                    'Estatus'=>$rEvento{'Estatus'},
-                                                                    'fhFechaEvento'=>$rEvento{'fhFechaEvento'},
-                                                                    'eCodEvento'=>$rEvento{'eCodEvento'},
-                                                                    'activa'=>$activa
-                                                                    );
-    
-                                        $eventos[] = generarCuadro($datos);
-                                                    }
-
-//consulta rentas
-$select = "SELECT be.*, cc.tNombres nombreCliente, cc.tApellidos apellidosCliente,
-															su.tNombre as promotor, ce.tNombre Estatus, ce.tIcono , ce.tColor, TIMESTAMPDIFF(HOUR,$hoy,be.fhFechaEvento) Diferencia
-                                                            FROM BitEventos be INNER JOIN CatClientes cc ON cc.eCodCliente = be.eCodCliente
-															INNER JOIN CatEstatus ce ON ce.eCodEstatus = be.eCodEstatus
-														LEFT JOIN SisUsuarios su ON su.eCodUsuario = be.eCodUsuario
-                                                        WHERE
-                                                        be.fhFechaEvento >= '$fhFechaInicio' AND be.fhFechaEvento<='$fhFechaTermino'".
-                                                        " AND be.eCodEstatus<>4".
-                                                        " AND be.eCodTipoDocumento=2".
-                                                        " AND cc.eCodCliente <> 1".
-												        ($bAll ? "" : " AND cc.eCodUsuario = ".$_SESSION['sessionAdmin']['eCodUsuario']).
-														" ORDER BY be.fhFechaEvento DESC";
-
-
-
-$rsEventos = mysql_query($select);
-while($rEvento = mysql_fetch_array($rsEventos))
-                                                    {
-                                                        $activa = $_SESSION['sessionAdmin']['bAll'] ? true : false;
-                                                        
-                                                        $tColor='';
-                                                    if($rEvento{'eCodEstatus'}==1 && $rEvento{'Diferencia'}<=168) { $tColor = 'style="background:#eb8f34;"';}
-                                                    if($rEvento{'eCodEstatus'}==2) { $tColor = 'style="background:'.$rEvento{'tColor'}.';"';}
-    
-                                        $datos = array(
-                                                                    'tColor'=>$tColor,
-                                                                    'tIcono'=>$rEvento{'tIcono'},
-                                                                    'nombreCliente'=>$rEvento{'nombreCliente'},
-                                                                    'apellidosCliente'=>$rEvento{'apellidosCliente'},
-                                                                    'promotor'=>$rEvento{'promotor'},
-                                                                    'tDireccion'=>$rEvento{'tDireccion'},
-                                                                    'Estatus'=>$rEvento{'Estatus'},
-                                                                    'fhFechaEvento'=>$rEvento{'fhFechaEvento'},
-                                                                    'eCodEvento'=>$rEvento{'eCodEvento'},
-                                                                    'activa'=>$activa
-                                                                    );
-                                                       
-                                        $rentas[] = generarCuadro($datos);
-                                                    }
-
-echo json_encode(array('eventos'=>$eventos,'rentas'=>$rentas));
+echo json_encode(array('tHTML'=>$tHTML));
 
 ?>
