@@ -391,7 +391,7 @@ function agregarFilaExtra(indice)
 
 //tienda
 
-function validarInventario(indice)
+function validarTienda(indice)
     {
         var eCodTienda    =   document.getElementById('eCodTienda'+indice),
             nIndice         =   parseInt(indice)+1;
