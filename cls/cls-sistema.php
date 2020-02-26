@@ -1,7 +1,7 @@
 <?php
 include("cnx/swgc-mysql.php");
 session_start();
-date_default_timezone_set('America/America/Mexico_City');
+date_default_timezone_set('America/Mexico_City');
 
 class clSis
 {

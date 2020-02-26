@@ -12,6 +12,7 @@ if (isset($_SERVER{'HTTP_ORIGIN'})) {
     }
 
 require_once("../cnx/swgc-mysql.php");
+date_default_timezone_set('America/Mexico_City');
 
 session_start();
 
