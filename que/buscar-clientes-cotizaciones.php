@@ -28,7 +28,7 @@ if($_POST['search'] || $_GET['search']){
     $select =   "	SELECT * FROM ( ".
 			" 	SELECT  ".
 			" 	cc.eCodCliente,  ".
-			" 	CONCAT(cc.tNombres, ' ', cc.tApellidos) tCliente,  ".
+			" 	cc.tNombres tCliente,  ".
 			" 	bLibre ".
 			" FROM ".
 			" 	CatClientes cc ".
