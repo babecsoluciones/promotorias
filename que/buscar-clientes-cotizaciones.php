@@ -22,7 +22,7 @@ if($_POST['search'] || $_GET['search']){
     
     for($i=0;$i<sizeof($terms);$i++)
     {
-        $termino .= " AND tNombre like '%".$terms[$i]."%' ";
+        $termino .= " AND tNombres like '%".$terms[$i]."%' ";
     }
 
     $select =   "	SELECT * FROM CatClientes WHERE 1=1 ".$termino;
