@@ -22,7 +22,7 @@ if($_POST['search'] || $_GET['search']){
     
     for($i=0;$i<sizeof($terms);$i++)
     {
-        $termino .= " AND tNombres like '%".$terms[$i]."%' ";
+        $termino .= " AND cc.tNombres like '%".$terms[$i]."%' ";
     }
 
     $select =   "	SELECT * FROM ( ".
@@ -33,7 +33,6 @@ if($_POST['search'] || $_GET['search']){
 			" 	su.tNombre as promotor ".
 			" FROM ".
 			" 	CatClientes cc ".
-			" LEFT JOIN SisUsuarios su ON su.eCodUsuario = cc.eCodUsuario".
             " WHERE 1=1 ".
             $termino.
             " )N1 ".
@@ -43,7 +42,7 @@ if($_POST['search'] || $_GET['search']){
             $result = mysql_query($select);
     
     while($row = mysql_fetch_array($result)){
-        $response[] = array("value"=>$row['eCodCliente'],"label"=>$row['tCliente']);
+        $response[] = array("value"=>$row['eCodCliente'],"label"=>$row['tCliente'],"query"=>$select);
     }
 
     echo json_encode($response);
