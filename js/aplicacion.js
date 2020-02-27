@@ -421,3 +421,102 @@ function agregarFilaTienda(indice)
         }
         
     }
+
+//supervisor
+
+function validarSupervisor(indice)
+    {
+        var eCodSupervisor    =   document.getElementById('eCodSupervisor'+indice),
+            nIndice         =   parseInt(indice)+1;
+        
+        if(eCodSupervisor.value)
+            {
+                agregarFilaSupervisor(nIndice);    
+            }
+    }
+    
+function agregarFilaSupervisor(indice)
+    {
+        var x = document.getElementById("supervisores").rows.length;
+        
+        
+        var eCodSupervisor = document.getElementById('eCodSupervisor'+indice);
+        if(eCodSupervisor)
+            {}
+        else
+        {
+           
+    var table = document.getElementById("supervisores");
+    var row = table.insertRow(x);
+    row.id="sup"+(indice);
+    row.innerHTML = '<td><i class="far fa-trash-alt" onclick="deleteRow(\'sup'+indice+'\',\'supervisores\')"></i></td>';
+    row.innerHTML += '<td><input type="hidden" id="eCodSupervisor'+indice+'" name="supervisores['+indice+'][eCodSupervisor]"><input type="text" class="form-control" id="tSupervisor'+indice+'" name="supervisores['+indice+'][tSupervisor]" onkeyup="agregarSupervisor('+indice+')" onkeypress="agregarSupervisor('+indice+')" onblur="validarSupervisor('+indice+')"></td>';
+        }
+        
+    }
+
+//Promotor
+
+function validarPromotor(indice)
+    {
+        var eCodPromotor    =   document.getElementById('eCodPromotor'+indice),
+            nIndice         =   parseInt(indice)+1;
+        
+        if(eCodPromotor.value)
+            {
+                agregarFilaPromotor(nIndice);    
+            }
+    }
+    
+function agregarFilaPromotor(indice)
+    {
+        var x = document.getElementById("promotores").rows.length;
+        
+        
+        var eCodPromotor = document.getElementById('eCodPromotor'+indice);
+        if(eCodPromotor)
+            {}
+        else
+        {
+           
+    var table = document.getElementById("promotores");
+    var row = table.insertRow(x);
+    row.id="pro"+(indice);
+    row.innerHTML = '<td><i class="far fa-trash-alt" onclick="deleteRow(\'pro'+indice+'\',\'promotores\')"></i></td>';
+    row.innerHTML += '<td><input type="hidden" id="eCodPromotor'+indice+'" name="Promotores['+indice+'][eCodPromotor]"><input type="text" class="form-control" id="tPromotor'+indice+'" name="Promotores['+indice+'][tPromotor]" onkeyup="agregarPromotor('+indice+')" onkeypress="agregarPromotor('+indice+')" onblur="validarPromotor('+indice+')"></td>';
+        }
+        
+    }
+
+//Cliente
+
+function validarCliente(indice)
+    {
+        var eCodCliente    =   document.getElementById('eCodCliente'+indice),
+            nIndice         =   parseInt(indice)+1;
+        
+        if(eCodCliente.value)
+            {
+                agregarFilaCliente(nIndice);    
+            }
+    }
+    
+function agregarFilaCliente(indice)
+    {
+        var x = document.getElementById("clientes").rows.length;
+        
+        
+        var eCodCliente = document.getElementById('eCodCliente'+indice);
+        if(eCodCliente)
+            {}
+        else
+        {
+           
+    var table = document.getElementById("clientes");
+    var row = table.insertRow(x);
+    row.id="cli"+(indice);
+    row.innerHTML = '<td><i class="far fa-trash-alt" onclick="deleteRow(\'cli'+indice+'\',\'clientes\')"></i></td>';
+    row.innerHTML += '<td><input type="hidden" id="eCodCliente'+indice+'" name="clientes['+indice+'][eCodCliente]"><input type="text" class="form-control" id="tCliente'+indice+'" name="clientes['+indice+'][tCliente]" onkeyup="agregarCliente('+indice+')" onkeypress="agregarCliente('+indice+')" onblur="validarCliente('+indice+')"></td>';
+        }
+        
+    }
