@@ -29,8 +29,7 @@ if($_POST['search'] || $_GET['search']){
 			" 	SELECT  ".
 			" 	cc.eCodCliente,  ".
 			" 	CONCAT(cc.tNombres, ' ', cc.tApellidos) tCliente,  ".
-			" 	bLibre,  ".
-			" 	su.tNombre as promotor ".
+			" 	bLibre ".
 			" FROM ".
 			" 	CatClientes cc ".
             " WHERE 1=1 ".
