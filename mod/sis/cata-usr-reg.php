@@ -4,7 +4,7 @@ require_once("cls/cls-sistema.php");
 $clSistema = new clSis();
 session_start();
 
-$select = "SELECT * FROM SisUsuarios WHERE eCodUsuario = ".$_GET['v1'];
+$select = "SELECT su.*, cc.tNombres tNombreCliente, cc.tApellidos tApellidoCliente FROM SisUsuarios su LEFT JOIN CatClientes cc ON cc.eCodCliente=su.eCodCliente WHERE su.eCodUsuario = ".$_GET['v1'];
 $rsUsuario = mysql_query($select);
 $rUsuario = mysql_fetch_array($rsUsuario);
 
@@ -70,7 +70,14 @@ function validar()
                                                     <label for="postal-code" class=" form-control-label">Apellido(s)</label>
                                                     <input type="text" name="tApellidos" placeholder="Apellido(s)" value="<?=utf8_decode($rUsuario{'tApellidos'})?>" class="form-control"<?=$_GET['eCodUsuario'] ? 'readonly' : ''?>>
                                                 </div>
-                                            
+                                          
+                                            <div class="form-group">
+              <label> Cliente</label> 
+               <input type="hidden" name="eCodCliente" id="eCodCliente" value="<?=$rUsuario{'eCodCliente'};?>"> 
+               <input type="text" class="form-control" id="tCliente"  value="<?=(($rUsuario{'eCodCliente'}) ? $rUsuario{'tNombreCliente'} . ' '.$rUsuario{'tApellidoCliente'} : '');?>" placeholder="Cliente" onkeyup="buscarClientes()" onkeypress="buscarClientes()"> 
+               <small>Buscar y seleccionar el cliente de la lista</small>
+               </div>
+                                                
                                         <div class="form-group">
                                             <label for="country" class=" form-control-label">Perfil</label>
 											<select id="eCodPerfil" name="eCodPerfil" class="form-control col-md-6">

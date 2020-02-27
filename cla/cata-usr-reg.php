@@ -35,6 +35,7 @@ $eCodUsuario = $data->eCodUsuario ? $data->eCodUsuario : false;
         $tPasswordOperaciones = $data->tPasswordAcceso ? "'".base64_encode($data->tPasswordAcceso)."'" : false;
         //$tPasswordOperaciones = $data->tPasswordOperaciones ? "'".base64_encode($data->tPasswordOperaciones)."'" : false;
         $tCorreo = $data->tCorreo ? "'".$data->tCorreo."'" : false;
+        $eCodCliente = $data->eCodCliente ? $data->eCodCliente : "NULL";
         $bAll = $data->bAll ? 1 : 0;
         
         $fhFechaCreacion = "'".date('Y-m-d H:i:s')."'";
@@ -55,7 +56,7 @@ if(!sizeof($errores))
 {
         if(!$eCodUsuario)
         {
-            $insert = "INSERT INTO SisUsuarios (tNombre, tApellidos, tCorreo, tPasswordAcceso, tPasswordOperaciones,  eCodEstatus, eCodPerfil, fhFechaCreacion,bAll) VALUES ($tNombre, $tApellidos, $tCorreo, $tPasswordAcceso, $tPasswordOperaciones, 3, $eCodPerfil, $fhFechaCreacion,$bAll)";
+            $insert = "INSERT INTO SisUsuarios (tNombre, tApellidos, tCorreo, tPasswordAcceso, tPasswordOperaciones,  eCodEstatus, eCodPerfil, fhFechaCreacion,bAll, eCodCliente) VALUES ($tNombre, $tApellidos, $tCorreo, $tPasswordAcceso, $tPasswordOperaciones, 3, $eCodPerfil, $fhFechaCreacion,$bAll, $eCodCliente)";
         }
         else
         {
@@ -63,7 +64,8 @@ if(!sizeof($errores))
             tPasswordAcceso = $tPasswordAcceso,
             tPasswordOperaciones = $tPasswordOperaciones,
             eCodPerfil = $eCodPerfil,
-            bAll = $bAll
+            bAll = $bAll,
+            eCodCliente = $eCodCliente
             WHERE
             eCodUsuario = $eCodUsuario";
         }
