@@ -238,7 +238,7 @@ $rPromotoria = mysql_fetch_array($rsPromotoria);
                 
                 $.ajax({
                     url: "/que/json-usuarios.php",
-                    type: 'get',
+                    type: 'post',
                     dataType: "json",
                     data: {
                         search: request.term,
@@ -279,7 +279,7 @@ $rPromotoria = mysql_fetch_array($rsPromotoria);
                 
                 $.ajax({
                     url: "/que/json-usuarios.php",
-                    type: 'get',
+                    type: 'post',
                     dataType: "json",
                     data: {
                         search: request.term,
@@ -321,7 +321,7 @@ $rPromotoria = mysql_fetch_array($rsPromotoria);
                 
                 $.ajax({
                     url: "/que/json-usuarios.php",
-                    type: 'get',
+                    type: 'post',
                     dataType: "json",
                     data: {
                         search: request.term,
