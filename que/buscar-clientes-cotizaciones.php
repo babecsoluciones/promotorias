@@ -42,7 +42,7 @@ if($_POST['search'] || $_GET['search']){
             $result = mysql_query($select);
     
     while($row = mysql_fetch_array($result)){
-        $response[] = array("value"=>$row['eCodCliente'],"label"=>$row['tCliente'],"query"=>$select);
+        $response[] = array("value"=>$row['eCodCliente'],"label"=>$row['tCliente']);
     }
 
     echo json_encode($response);
