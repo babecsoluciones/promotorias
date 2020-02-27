@@ -25,7 +25,20 @@ if($_POST['search'] || $_GET['search']){
         $termino .= " AND tNombres like '%".$terms[$i]."%' ";
     }
 
-    $select =   "	SELECT * FROM CatClientes WHERE 1=1 ".$termino;
+    $select =   "	SELECT * FROM ( ".
+			" 	SELECT  ".
+			" 	cc.eCodCliente,  ".
+			" 	CONCAT(cc.tNombres, ' ', cc.tApellidos) tCliente,  ".
+			" 	bLibre,  ".
+			" 	su.tNombre as promotor ".
+			" FROM ".
+			" 	CatClientes cc ".
+			" LEFT JOIN SisUsuarios su ON su.eCodUsuario = cc.eCodUsuario".
+            " WHERE 1=1 ".
+            $termino.
+            " )N1 ".
+            " WHERE 1=1 ".
+			" ORDER BY N1.eCodCliente ASC";
     
             $result = mysql_query($select);
     
