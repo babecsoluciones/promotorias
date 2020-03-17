@@ -8,29 +8,20 @@ session_start();
 $bAll = $_SESSION['bAll'];
 $bDelete = $_SESSION['bDelete'];
 
-if($_GET['eCodEvento'])
-{
-    mysql_query("UPDATE BitEventos SET eCodEstatus = ".$_GET['eAccion']." WHERE eCodEvento =".$_GET['eCodEvento']);
-    
-        $fhFecha = "'".date('Y-m-d H:i:s')."'";
-        $tDescripcion = "Se ha ".(($_GET['eAccion']==4) ? 'CANCELADO' : 'FINALIZADO')." el evento ".sprintf("%07d",$_GET['eCodEvento']);
-        $tDescripcion = "'".$tDescripcion."'";
-        $eCodUsuario = $_SESSION['sessionAdmin']['eCodUsuario'];
-        mysql_query("INSERT INTO SisLogs (eCodUsuario, fhFecha, tDescripcion) VALUES ($eCodUsuario, $fhFecha, $tDescripcion)");
-    
-    echo '<script>window.location="?tCodSeccion=cata-eve-con";</script>';
-              
-}
 
 $select = "SELECT * FROM SisMaximosRegistros ORDER BY eRegistros ASC";
 $rsMaximos = mysql_query($select);
+
+$select = "SELECT * FROM CatClientes WHERE ecodCliente = ".$_SESSION['sessionAdmin']['eCodCliente'];
+$rsCliente = mysql_query($select);
+$rCliente = mysql_fetch_array($rsCliente);
         
 $select = "SELECT DISTINCT
 	ce.tNombre tEstatus,
 	ce.eCodEstatus 
 FROM
 	CatEstatus ce
-	INNER JOIN BitEventos be ON be.eCodEstatus = ce.eCodEstatus
+	INNER JOIN BitPromotoria be ON be.eCodEstatus = ce.eCodEstatus
     WHERE 1=1 ".
     ($_SESSION['sessionAdmin']['bAll'] ? "" : " AND eCodEstatus<>4").
 " ORDER BY
@@ -61,19 +52,19 @@ $(document).ready(function() {
     
               //$('#fhFechaConsulta1, #fhFechaConsulta2').datepicker();
     
-        $("#fhFechaConsulta1").datepicker({
+        $("#fhFechaInicio").datepicker({
             dateFormat: "dd/mm/yy",
     onSelect: function(selectedDate) {
         // Set the minDate of 'to' as the selectedDate of 'from'
-        $("#fhFechaConsulta2").datepicker("option", "minDate", selectedDate);
+        $("#fhFechaTermino").datepicker("option", "minDate", selectedDate);
     }
 });
     
-$("#fhFechaConsulta2").datepicker({
+$("#fhFechaTermino").datepicker({
     dateFormat: "dd/mm/yy",
     onSelect: function(selectedDate) {
         // Set the minDate of 'to' as the selectedDate of 'from'
-        $("#fhFechaConsulta1").datepicker("option", "maxDate", selectedDate);
+        $("#fhFechaInicio").datepicker("option", "maxDate", selectedDate);
     }
 });
           
@@ -110,14 +101,14 @@ $("#fhFechaConsulta2").datepicker({
                                         <td width="25%"></td>
                                     </tr>
 <tr>
-    <td><label><input type="radio" name="rdOrden" value="eCodEvento" checked="checked"> C&oacute;digo</label></td>
+    <td><label><input type="radio" name="rdOrden" value="eCodPromotoria" checked="checked"> C&oacute;digo</label></td>
     <td>
-        <input type="text" class="form-control" name="eCodEvento" id="eCodEvento">
+        <input type="text" class="form-control" name="eCodPromotoria" id="eCodPromotoria">
     </td>
     <td><label><input type="radio" name="rdOrden" value="eCodCliente"> Cliente</label></td>
     <td>
-        <input type="hidden" name="eCodCliente" id="eCodCliente">
-        <input type="text" class="form-control" id="tCliente" placeholder="Cliente"  onkeyup="buscarClientes()" onkeypress="buscarClientes()">
+        <input type="hidden" name="eCodCliente" id="eCodCliente" value="<?=(($bAll) ? '' : $rCliente{'eCodCliente'});?>">
+        <input type="text" class="form-control" id="tCliente" placeholder="Cliente"  onkeyup="buscarClientes()" onkeypress="buscarClientes()" <?=(($bAll) ? '' : ' value="'.$rCliente{'tNombres'}.'" readonly');?>>
     </td>
 </tr>
 <tr>
@@ -130,12 +121,12 @@ $("#fhFechaConsulta2").datepicker({
         <? } ?>
         </select>
     </td>
-    <td><label><input type="radio" name="rdOrden" value="fhFechaEvento"> Fecha</label></td>
+    <td><label><input type="radio" name="rdOrden" value="fhFechaPromotoria"> Fecha</label></td>
     <td>
         <div class="input-group date">
-                    <input type="text" class="input-sm form-control" name="fhFechaConsulta1" id="fhFechaConsulta1" value="<?=date('d/m/Y',strtotime("-5 days"));?>" style="position: relative; z-index: 9999;">
+                    <input type="text" class="input-sm form-control" name="fhFechaInicio" id="fhFechaInicio" value="<?=date('d/m/Y',strtotime("-5 days"));?>" style="position: relative; z-index: 9999;">
             <span class="input-group-addon">-</span>
-             <input type="text" class="input-sm form-control" name="fhFechaConsulta2" id="fhFechaConsulta2" value="<?=date('d/m/Y',strtotime("+5 days"));?>" style="position: relative; z-index: 9999;">
+             <input type="text" class="input-sm form-control" name="fhFechaTermino" id="fhFechaTermino" value="<?=date('d/m/Y',strtotime("+5 days"));?>" style="position: relative; z-index: 9999;">
                 </div>
     </td>
 </tr>

@@ -20,10 +20,6 @@ class clSis
 		$rsUsuario = mysql_query($select);
 		$rUsuario = mysql_fetch_array($rsUsuario);
         
-        $pf = fopen("inicio.txt","a");
-            fwrite($pf,$select."\n\n");
-            fclose($pf);
-		
 		if($rsUsuario)
 		{
 			$_SESSION['sessionAdmin'] = $rUsuario;
@@ -32,9 +28,8 @@ class clSis
             
             mysql_query("INSERT INTO SisUsuariosAccesos (eCodUsuario, fhFecha) VALUES (".$rUsuario{'eCodUsuario'}.",'".date('Y-m-d H:i:s')."')");
             
-            $pf = fopen("inicio.txt","a");
-            fwrite($pf,base64_decode($url));
-            fclose($pf);
+            if($rUsuario{'eCodPerfil'}==4)
+            { $this->consultarPromotoria(); }
             
 			return array('exito'=>1,'seccion'=>$url);
 		}
@@ -76,7 +71,8 @@ class clSis
 						ss.tCodSeccion,
 						ss.tTitulo,
 						ss.tIcono,
-                        ss.ePosicion
+                        ss.ePosicion,
+                        ss.bSesion
 					FROM SisSecciones ss".
 					($_SESSION['sessionAdmin']['bAll'] ? "" : " INNER JOIN SisSeccionesPerfiles ssp ON ssp.tCodSeccion = ss.tCodSeccion").
 					" WHERE
@@ -99,7 +95,12 @@ class clSis
                         $url = $this->generarUrl($rMenu{'tCodSeccion'});
 		          	    $activo = ($_GET['tCodSeccion']==$rMenu{'tCodSeccion'}) ? 'class="mm-active"' : '';
 		          	    $bArchivo = $url;
-		          	    $tMenu .= '<li  style="position: relative; z-index: 9999;" '.$activo.'>
+                      
+                        $bOcultar = (
+                            ($rMenu{'bSesion'} && 
+                             ($_SESSION['sessionAdmin']['eCodPerfil']!=3 && $_SESSION['sessionAdmin']['eCodPerfil']!=4)) ? 'display:none;' : '');
+                      
+		          	    $tMenu .= '<li  style="position: relative; z-index: 9999; '.$bOcultar.'" '.$activo.'>
                                       <a href="'.$this->url.$bArchivo.'"><i class="'.($rTipoSeccion{'tIcono'}).'"></i>'.utf8_decode($rMenu{'tTitulo'}).'</a>
                                   </li>';
 		          }
@@ -209,6 +210,34 @@ class clSis
 		$_SESSION['sessionAdmin'] = NULL;
 		session_destroy();
 	}
+    
+    public function consultarPromotoria()
+    {
+        $select =   " SELECT cc.tNombres tCliente, bp.eCodPromotoria, ".
+            " bp.fhFechaPromotoria, ce.tIcono estatus, ".
+            " pp.eCodTienda, ct.tNombre tTienda ".
+            " FROM BitPromotoria bp ".
+            " INNER JOIN CatClientes cc ON cc.eCodCliente = bp.eCodCliente ".
+            " INNER JOIN CatEstatus ce ON ce.eCodEstatus = bp.eCodEstatus ".
+            " INNER JOIN RelPromotoriasPromotores pp ON pp.eCodPromotoria = bp.eCodPromotoria ".
+            " INNER JOIN RelPromotoriasSupervisores ps ON ps.eCodPromotoria = bp.eCodPromotoria ".
+            " INNER JOIN CatTiendas ct ON ct.eCodTienda = pp.eCodTienda ".
+            " WHERE DATE(bp.fhFechaPromotoria) = '".date('Y-m-d')."'".
+            ($_SESSION['sessionAdmin']['eCodPerfil']==3 ? " AND ps.eCodSupervisor = ".$_SESSION['sessionAdmin']['eCodUsuario'] : "").
+            ($_SESSION['sessionAdmin']['eCodPerfil']==4 ? " AND pp.eCodPromotor = ".$_SESSION['sessionAdmin']['eCodUsuario'] : "").
+            " LIMIT 0,1 ";
+        $rsConsulta = mysql_query($select);
+        
+        if(mysql_num_rows($rsConsulta)==1)
+        {
+            $r = mysql_fetch_array($rsConsulta);
+            $_SESSION['sesionPromotoria'] = $r;
+        }
+        else
+        {
+            $_SESSION['sesionPromotoria'] = false;
+        }
+    }
 	
 	//Secciones
 	public function validarPermiso($seccion)

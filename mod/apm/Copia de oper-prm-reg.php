@@ -2,67 +2,7 @@
 require_once("cnx/swgc-mysql.php");
 require_once("cls/cls-sistema.php");
 
-function supervisores($indice,$datos)
-{
-    ?>
-    <table width="100%" id="supervisores<?=$indice;?>">
-    <tr>
-      <td><i class="far fa-trash-alt" onclick="deleteRow('sup<?=$indice;?>','supervisores')"></i></td>
-    
-      <td>
- 
-    <input type="hidden" id="eCodSupervisor<?=$indice;?>" name="supervisores[<?=$indice;?>][eCodSupervisor]" value="<?=$datos['eCodUsuario'];?>">
-    <input type="text" class="form-control" id="tSupervisor<?=$indice;?>" name="supervisores[<?=$indice;?>][tSupervisor]" onkeyup="agregarSupervisor(<?=$indice;?>)" onkeypress="agregarSupervisor(<?=$indice;?>)" onblur="validarSupervisor(<?=$indice;?>)" placeholder="Supervisor" value="<?=($datos['tNombre'] ? ($datos['tNombre'].' '.$datos['tApellidos']) : '');?>" autocomplete="off">
 
-     </td>
-        </tr>
-        <tr>
-        <td></td>
-      <td>
-        <table width="100%" id="promotores<?=$indice;?>">
-    <?
-    //
-    $select = "SELECT su.eCodUsuario, su.tNombre, su.tApellidos,
-	ct.eCodTienda,
-	ct.tNombre tTienda FROM SisUsuarios su INNER JOIN RelPromotoriasPromotores rs ON rs.eCodPromotor=su.eCodUsuario INNER JOIN CatTiendas ct ON ct.eCodTienda = rs.eCodTienda WHERE rs.eCodPromotoria = ".$datos{'eCodPromotoria'}.
-    " AND rs.eCodSupervisor = ".$datos{'eCodUsuario'};
-    
-    $rsPromotores = mysql_query($select);
-    $j = 0;
-    while($rPromotor = mysql_fetch_array($rsPromotores)){
-     promotores($indice,$j,$rPromotor);
-        $j++;
-    }
-    promotores($indice,$j);
-    //
-    ?>
-        </table>
-      </td>
-    </tr>
-    </table>
-    <?
-}
-
-function promotores($indice,$fila,$datos)
-{
-    ?>
-        <tr id="pro<?=$indice;?>-<?=$fila;?>">
-          <td><i class="far fa-trash-alt" onclick="deleteRow('pro<?=$indice;?>-<?=$fila;?>','promotores<?=$indice;?>')"></i></td>
-          <td>
-
-    <input type="hidden" id="eCodPromotor<?=$indice;?>-<?=$fila;?>" name="promotores[<?=$indice;?>][<?=$fila;?>][eCodPromotor]" value="<?=$datos['eCodUsuario'];?>">
-    <input type="text" class="form-control" id="tPromotor<?=$indice;?>-<?=$fila;?>" name="promotores[<?=$indice;?>][<?=$fila;?>][tPromotor]" onkeyup="agregarPromotor(<?=$indice;?>,<?=$fila;?>)" onkeypress="agregarPromotor(<?=$indice;?>,<?=$fila;?>)" onblur="validarPromotor(<?=$indice;?>,<?=$fila;?>)" placeholder="Demovendedor" value="<?=($datos['tNombre'] ? ($datos['tNombre'].' '.$datos['tApellidos']) : '');?>" autocomplete="off">
-
-          </td>
-          <td>
-
-    <input type="hidden" id="eCodTienda<?=$indice;?>-<?=$fila;?>" name="promotores[<?=$indice;?>][<?=$fila;?>][eCodTienda]" value="<?=$datos['eCodTienda'];?>">
-    <input type="text" class="form-control" id="tTienda<?=$indice;?>-<?=$fila;?>" name="promotores[<?=$indice;?>][<?=$fila;?>][tTienda]" onkeyup="agregarTienda(<?=$indice;?>,<?=$fila;?>)" onkeypress="agregarTienda(<?=$indice;?>,<?=$fila;?>)" onblur="validarPromotor(<?=$indice;?>,<?=$fila;?>)" placeholder="Tienda" value="<?=$datos['tTienda'];?>" autocomplete="off">
-  
-          </td>
-        </tr>
-    <?
-}
 
 
 $clSistema = new clSis();
@@ -81,19 +21,11 @@ $rsTiendas = mysql_query($select);
 $select = "SELECT DISTINCT cp.eCodProducto, cp.tNombre tProducto FROM RelPromotoriasPresentaciones rp INNER JOIN CatProductos cp ON cp.eCodProducto=rp.eCodProducto WHERE rp.eCodPromotoria = ".$rPromotoria{'eCodPromotoria'}." ORDER BY cp.eCodProducto ASC";
 $rsProductos = mysql_query($select);
 
-$select = "SELECT
-    rs.eCodPromotoria,
-	su.eCodUsuario,
-	su.tNombre,
-	su.tApellidos 
-FROM
-	SisUsuarios su
-	INNER JOIN RelPromotoriasSupervisores rs ON rs.eCodSupervisor= su.eCodUsuario
-WHERE
-	rs.eCodPromotoria =".$rPromotoria{'eCodPromotoria'};
+$select = "SELECT su.eCodUsuario, su.tNombre, su.tApellidos FROM SisUsuarios su INNER JOIN RelPromotoriasSupervisores rs ON rs.eCodSupervisor=su.eCodUsuario WHERE rs.eCodPromotoria = ".$rPromotoria{'eCodPromotoria'};
 $rsSupervisores = mysql_query($select);
 
-
+$select = "SELECT su.eCodUsuario, su.tNombre, su.tApellidos FROM SisUsuarios su INNER JOIN RelPromotoriasPromotores rs ON rs.eCodPromotor=su.eCodUsuario WHERE rs.eCodPromotoria = ".$rPromotoria{'eCodPromotoria'};
+$rsPromotores = mysql_query($select);
 
 $select = "SELECT su.eCodUsuario, su.tNombre, su.tApellidos FROM SisUsuarios su INNER JOIN RelPromotoriasClientes rs ON rs.eCodUsuario=su.eCodUsuario WHERE rs.eCodPromotoria = ".$rPromotoria{'eCodPromotoria'};
 $rsClientes = mysql_query($select);
@@ -147,7 +79,7 @@ $rsClientes = mysql_query($select);
               <input type="text" class="form-control" name="fhFechaPromotoria" id="fhFechaPromotoria" value="<?=$rPromotoria{'fhFechaPromotoria'} ? date('d/m/Y',strtotime($rPromotoria{'fhFechaPromotoria'})) : ""?>" >
             </div>
                                         
-           <div class="position-relative form-group" style="display:none;">
+           <div class="position-relative form-group">
               <label>Tiendas</label>
               <table class="table table-hover" id="tiendas" width="100%">
                    <?
@@ -287,32 +219,72 @@ $rsClientes = mysql_query($select);
                 </div>
                 
             </div>
-            <div class="col-md-8">
+            <div class="col-md-4">
                 <div class="main-card mb-3 card">
                     <div class="card-body">
                         <h5 class="card-title">Supervisores</h5>
                         <div class="table-responsive">
-                            <table width="100%" id="supervisores">
-                             <? $i = 0; ?>
-                             <?
+                            <table class="table table-hover" id="supervisores" width="100%">
+                                       <? $i = 0; ?>
+                                       <?
                                 while($rSupervisor = mysql_fetch_array($rsSupervisores)){
-                             ?>
-                             <tr id="sup<?=$i;?>">
-                                 <td>
-                                 <?  supervisores($i,$rSupervisor); ?>
-                                 </td>
-                             </tr>
-                             <? $i++; ?>
-                             <? } ?>
-                             <tr id="sup<?=$i;?>">
-                                 <td>
-                             <? supervisores($i); ?>
-                                 </td>
-                             </tr>
-                            </table>
+                                ?>
+                                      <tr id="sup<?=$i;?>">
+                        <td><i class="far fa-trash-alt" onclick="deleteRow('sup<?=$i?>','supervisores')"></i></td>
+                        <td>
+                            <input type="hidden" id="eCodSupervisor<?=$i;?>" name="supervisores[<?=$i;?>][eCodSupervisor]" value="<?=$rSupervisor{'eCodUsuario'};?>">
+                            <input type="text" class="form-control" id="tSupervisor<?=$i;?>" name="supervisores[<?=$i;?>][tSupervisor]" onkeyup="agregarSupervisor(<?=$i;?>)" onkeypress="agregarSupervisor(<?=$i;?>)" onblur="validarSupervisor(<?=$i;?>)" value="<?=utf8_encode($rSupervisor{'tNombre'} ? $rSupervisor{'tNombre'}.' '.$rSupervisor{'tApellidos'} : '');?>">
+                        </td>
+                    </tr>
+                                       <? $i++; ?>
+                                       <? } ?>
+                                        <tr id="sup<?=$i;?>">
+                        <td><i class="far fa-trash-alt" onclick="deleteRow('sup<?=$i?>','supervisores')"></i></td>
+                        <td>
+                            <input type="hidden" id="eCodSupervisor<?=$i;?>" name="supervisores[<?=$i;?>][eCodSupervisor]">
+                            <input type="text" class="form-control" id="tSupervisor<?=$i;?>" name="supervisores[<?=$i;?>][tSupervisor]" onkeyup="agregarSupervisor(<?=$i;?>)" onkeypress="agregarSupervisor(<?=$i;?>)" onblur="validarSupervisor(<?=$i;?>)">
+                        </td>
+                    </tr>
+                                    </table> 
+                                        
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="col-md-4">
+               
+                <div class="main-card mb-3 card">
+                    <div class="card-body">
+                        <h5 class="card-title">Demovendedores</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="promotores" width="100%">
+                                       <? $i = 0; ?>
+                                       <?
+                                while($rPromotor = mysql_fetch_array($rsPromotores)){
+                                ?>
+                                      <tr id="pro<?=$i;?>">
+                        <td><i class="far fa-trash-alt" onclick="deleteRow('pro<?=$i?>','promotores')"></i></td>
+                        <td>
+                            <input type="hidden" id="eCodPromotor<?=$i;?>" name="promotores[<?=$i;?>][eCodPromotor]" value="<?=$rPromotor{'eCodUsuario'};?>">
+                            <input type="text" class="form-control" id="tPromotor<?=$i;?>" name="promotores[<?=$i;?>][tPromotor]" onkeyup="agregarPromotor(<?=$i;?>)" onkeypress="agregarPromotor(<?=$i;?>)" onblur="validarPromotor(<?=$i;?>)" value="<?=utf8_encode($rPromotor{'tNombre'} ? $rPromotor{'tNombre'}.' '.$rPromotor{'tApellidos'} : '');?>">
+                        </td>
+                    </tr>
+                                       <? $i++; ?>
+                                       <? } ?>
+                                        <tr id="pro<?=$i;?>">
+                        <td><i class="far fa-trash-alt" onclick="deleteRow('pro<?=$i?>','promotores')"></i></td>
+                        <td>
+                            <input type="hidden" id="eCodPromotor<?=$i;?>" name="promotores[<?=$i;?>][eCodPromotor]">
+                            <input type="text" class="form-control" id="tPromotor<?=$i;?>" name="promotores[<?=$i;?>][tPromotor]" onkeyup="agregarPromotor(<?=$i;?>)" onkeypress="agregarPromotor(<?=$i;?>)" onblur="validarPromotor(<?=$i;?>)">
+                        </td>
+                    </tr>
+                                    </table> 
+                                        
+                        </div>
+                    </div>
+                </div>
+               
+                
             </div>
         </div>
     </div>
@@ -321,19 +293,16 @@ $rsClientes = mysql_query($select);
         <input type="hidden" name="eFilas" id="eFilas" value="<?=$i?>">
         <input type="hidden" id="dTotalImportes" value="0">
     </form>
-   <form id="frmFilas" method="post">
-       <input type="hidden" name="eIndice" id="eIndice" value="0">
-       <input type="hidden" name="eFila" id="eFila" value="0">
-   </form>
+   
 <script>
     
     //autocompletes
    
     
-    function agregarTienda(indice,fila)
+    function agregarTienda(indice)
         {
-            var tTienda = document.getElementById('tTienda'+indice+'-'+fila),
-                eCodTienda = document.getElementById('eCodTienda'+indice+'-'+fila);
+            var tTienda = document.getElementById('tTienda'+indice),
+                eCodTienda = document.getElementById('eCodTienda'+indice);
             
             if(tTienda.value=="" || !tTienda.value)
                 {
@@ -343,7 +312,7 @@ $rsClientes = mysql_query($select);
             
              $( function() {
   
-        $( "#tTienda"+indice+"-"+fila ).autocomplete({
+        $( "#tTienda"+indice ).autocomplete({
             source: function( request, response ) {
                 
                 $.ajax({
@@ -359,8 +328,8 @@ $rsClientes = mysql_query($select);
                 });
             },
             select: function (event, ui) {
-                $('#tTienda'+indice+'-'+fila).val(ui.item.label);
-                $('#eCodTienda'+indice+'-'+fila).val(ui.item.value); 
+                $('#tTienda'+indice).val(ui.item.label);
+                $('#eCodTienda'+indice).val(ui.item.value); 
                 return false;
                 
             }
@@ -493,10 +462,10 @@ $rsClientes = mysql_query($select);
         }); 
         }
     
-    function agregarPromotor(indice,fila)
+    function agregarPromotor(indice)
         {
-            var tPromotor = document.getElementById('tPromotor'+indice+'-'+fila),
-                eCodPromotor = document.getElementById('eCodPromotor'+indice+'-'+fila);
+            var tPromotor = document.getElementById('tPromotor'+indice),
+                eCodPromotor = document.getElementById('eCodPromotor'+indice);
             
             if(tPromotor.value=="" || !tPromotor.value)
                 {
@@ -507,7 +476,7 @@ $rsClientes = mysql_query($select);
             
              $( function() {
   
-        $( "#tPromotor"+indice+"-"+fila ).autocomplete({
+        $( "#tPromotor"+indice ).autocomplete({
             source: function( request, response ) {
                 
                 $.ajax({
@@ -525,8 +494,8 @@ $rsClientes = mysql_query($select);
                 });
             },
             select: function (event, ui) {
-                $('#tPromotor'+indice+"-"+fila).val(ui.item.label);
-                $('#eCodPromotor'+indice+"-"+fila).val(ui.item.value); 
+                $('#tPromotor'+indice).val(ui.item.label);
+                $('#eCodPromotor'+indice).val(ui.item.value); 
                 return false;
                 
             }
@@ -580,125 +549,6 @@ $rsClientes = mysql_query($select);
         }
     
     //validaciones
-    
-    //supervisor
-
-function validarSupervisor(indice)
-    {
-        var eCodSupervisor    =   document.getElementById('eCodSupervisor'+indice),
-            nIndice         =   parseInt(indice)+1;
-        
-        if(eCodSupervisor.value)
-            {
-                agregarFilaSupervisor(nIndice);    
-            }
-    }
-    
-function agregarFilaSupervisor(indice)
-    {
-        var x = document.getElementById("supervisores").rows.length;
-        
-        
-        var eCodSupervisor = document.getElementById('eCodSupervisor'+indice);
-        if(eCodSupervisor)
-            {}
-        else
-        {
-            
-            document.getElementById('eIndice').value = indice;
-            
-            var obj = $('#frmFilas').serializeJSON();
-            var jsonString = JSON.stringify(obj);
-            
-            $.ajax({
-              type: "POST",
-              url: "/tbl/supervisores.php",
-              data: jsonString,
-              contentType: "application/json; charset=utf-8",
-              dataType: "json",
-              success: function(data){
-                  /*agregamos en la tabla*/
-                    var table = document.getElementById("supervisores");
-                    var row = table.insertRow(x);
-                    row.id="sup"+(indice);
-                    row.innerHTML = '<td>'+data.tHTML+'</td>';
-                  /*agregamos en la tabla*/
-                  
-                  /*vaciamos*/
-                  document.getElementById('eFila').value = '';
-                    document.getElementById('eIndice').value = '';
-                  /*vaciamos*/
-              },
-              failure: function(errMsg) {
-                  alert('Error al enviar los datos.');
-              }
-          });
-           
-    
-        }
-        
-    }
-
-//Promotor
-
-function validarPromotor(indice,fila)
-    {
-        var eCodPromotor    =   document.getElementById('eCodPromotor'+indice+'-'+fila),
-         eCodTienda    =   document.getElementById('eCodTienda'+indice+'-'+fila),
-            nIndice         =   parseInt(fila)+1;
-        
-        if(eCodPromotor.value && eCodTienda.value)
-            {
-                agregarFilaPromotor(indice,nIndice);    
-            }
-    }
-    
-function agregarFilaPromotor(indice,fila)
-    {
-        var x = document.getElementById("promotores"+indice).rows.length;
-        
-        
-        var eCodPromotor = document.getElementById('eCodPromotor'+indice+'-'+fila);
-        if(eCodPromotor)
-            {}
-        else
-        {
-            
-            document.getElementById('eFila').value = fila;
-            document.getElementById('eIndice').value = indice;
-            
-          var obj = $('#frmFilas').serializeJSON();
-            var jsonString = JSON.stringify(obj);
-          
-          
-          $.ajax({
-              type: "POST",
-              url: "/tbl/promotores.php",
-              data: jsonString,
-              contentType: "application/json; charset=utf-8",
-              dataType: "json",
-              success: function(data){
-                  /*agregamos en la tabla*/
-                    var table = document.getElementById("promotores"+indice);
-                    var row = table.insertRow(x);
-                    row.id="pro"+(indice)+'-'+(fila);
-                    row.innerHTML = data.tHTML;
-                  /*agregamos en la tabla*/
-                  
-                  /*vaciamos*/
-                  document.getElementById('eFila').value = '';
-                    document.getElementById('eIndice').value = '';
-                  /*vaciamos*/
-              },
-              failure: function(errMsg) {
-                  alert('Error al enviar los datos.');
-              }
-          });
-           
-    
-        }
-        
-    }
     
 function validarProducto(indice)
     {

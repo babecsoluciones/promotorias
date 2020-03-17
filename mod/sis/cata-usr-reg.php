@@ -3,6 +3,7 @@ require_once("cnx/swgc-mysql.php");
 require_once("cls/cls-sistema.php");
 $clSistema = new clSis();
 session_start();
+$bAll = $_SESSION['bAll'];
 
 $select = "SELECT su.*, cc.tNombres tNombreCliente, cc.tApellidos tApellidoCliente FROM SisUsuarios su LEFT JOIN CatClientes cc ON cc.eCodCliente=su.eCodCliente WHERE su.eCodUsuario = ".$_GET['v1'];
 $rsUsuario = mysql_query($select);
@@ -84,7 +85,7 @@ function validar()
 											<option value="">Seleccione</option>
 												<?
 												$select = "SELECT * FROM SisPerfiles".
-															($_SESSION['sessionAdmin']['bAll'] ? "" : " WHERE eCodPerfil > 1").
+															($_SESSION['sessionAdmin']['bAll'] ? "" : " WHERE eCodPerfil > 2").
 															" ORDER BY eCodPerfil ASC";
 												$rsPerfiles = mysql_query($select);
 												while($rPerfil = mysql_fetch_array($rsPerfiles))

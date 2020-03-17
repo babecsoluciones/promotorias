@@ -48,7 +48,7 @@ $data = json_decode( file_get_contents('php://input') );
             VALUES
             (
             $tNombre,
-            $tDireccion
+            $tDireccion,
 			3
             )";
             

@@ -1,326 +1,117 @@
 <?php
 require_once("cnx/swgc-mysql.php");
 require_once("cls/cls-sistema.php");
+
+
 $clSistema = new clSis();
 session_start();
 $bAll = $_SESSION['bAll'];
-$select = "SELECT be.*, (cc.tNombres + ' ' + cc.tApellidos) as tNombre FROM BitEventos be INNER JOIN CatClientes cc ON cc.eCodCliente = be.eCodCliente WHERE be.eCodEvento = ".$_GET['v1'];
-$rsPublicacion = mysql_query($select);
-$rPublicacion = mysql_fetch_array($rsPublicacion);
+$bDelete = $_SESSION['bDelete'];
 
-$bIVA = $rPublicacion{'bIVA'} ? 1 : 0;
+$select = "SELECT bp.*, cc.tNombres FROM BitPromotoria bp INNER JOIN CatClientes cc ON cc.eCodCliente=bp.eCodCliente WHERE bp.eCodPromotoria = ".($_SESSION['sesionPromotoria']['eCodPromotoria'] ? $_SESSION['sesionPromotoria']['eCodPromotoria'] : $_GET['v1']);
+$rsPromotoria = mysql_query($select);
+$rPromotoria = mysql_fetch_array($rsPromotoria);
 
-//clientes
-$select = "	SELECT 
-															cc.*, 
-											
-															su.tNombre as promotor
-														FROM
-															CatClientes cc
-														
-														LEFT JOIN SisUsuarios su ON su.eCodUsuario = cc.eCodUsuario".
-												($bAll ? "" : " WHERE cc.eCodUsuario = ".$_SESSION['sessionAdmin']['eCodUsuario']).
-														" ORDER BY cc.eCodCliente ASC";
+$select = "SELECT ct.eCodTienda, ct.tNombre FROM CatTiendas ct INNER JOIN RelPromotoriasTiendas rt ON rt.eCodTienda = ct.eCodTienda WHERE rt.eCodPromotoria = ".$rPromotoria{'eCodPromotoria'};
+$rsTiendas = mysql_query($select);
+
+$select = "SELECT DISTINCT cp.eCodProducto, cp.tNombre tProducto FROM RelPromotoriasPresentaciones rp INNER JOIN CatProductos cp ON cp.eCodProducto=rp.eCodProducto WHERE rp.eCodPromotoria = ".$rPromotoria{'eCodPromotoria'}." ORDER BY cp.eCodProducto ASC";
+$rsProductos = mysql_query($select);
+
+$select = "SELECT
+    rs.eCodPromotoria,
+	su.eCodUsuario,
+	su.tNombre,
+	su.tApellidos 
+FROM
+	SisUsuarios su
+	INNER JOIN RelPromotoriasSupervisores rs ON rs.eCodSupervisor= su.eCodUsuario
+WHERE
+	rs.eCodPromotoria =".$rPromotoria{'eCodPromotoria'}.
+($_SESSION['sessionAdmin']['ecodPerfil']==3 ? " AND rs.eCodSupervisor = ".$_SESSION['sessionAdmin']['eCodUsuario'] : "");
+$rsSupervisores = mysql_query($select);
+
+
+
+$select = "SELECT su.eCodUsuario, su.tNombre, su.tApellidos FROM SisUsuarios su INNER JOIN RelPromotoriasClientes rs ON rs.eCodUsuario=su.eCodUsuario WHERE rs.eCodPromotoria = ".$rPromotoria{'eCodPromotoria'};
 $rsClientes = mysql_query($select);
 
 ?>
 
-
-
- 
-
-    <form id="datos" name="datos" action="<?=$_SERVER['REQUEST_URI']?>" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="eCodEvento" value="<?=$_GET['v1']?>">
-        <input type="hidden" name="eAccion" id="eAccion">
-        <div class="row">
-        <div class="col-md-8">
-                <div class="main-card mb-3 card">
-                    <div class="card-body">
-                        <h5 class="card-title">Datos Principales</h5>
-                        <div>
-                            <? if($rPublicacion{'eCodUsuarioCancelacion'}){ ?>
-            <?
-            $select = "	SELECT su.tNombre as Usuario, su.tApellidos as Apellidos FROM SisUsuarios su WHERe su.eCodUsuario = ".$rPublicacion{'eCodUsuarioCancelacion'};
-             $rUsuario = mysql_fetch_array(mysql_query($select));
-            ?>
-           <div class="form-group">
-              <label>Estatus</label>
-              <b>CANCELADO</b>
-           </div>
-           <div class="form-group">
-              <label>Usuario Cancelaci&oacute;n</label>
-              <?=utf8_encode($rUsuario{'Usuario'}.' '.$rUsuario{'tApellidos'});?>
-           </div>
-           <div class="form-group">
-              <label>Fecha Cancelaci&oacute;n</label>
-              <?=date('d/m/Y H:i',strtotime($rPublicacion{'fhFechaCancelacion'}))?>
-           </div>
-         <? } ?>
-           <div class="form-group">
-              <label>Cliente</label>
-              
-                                                        <?
-     while($rPaquete = mysql_fetch_array($rsClientes))
-{
-         ?>
-                  <?=($rPublicacion{'eCodCliente'}==$rPaquete{'eCodCliente'}) ? $rPaquete{'tNombres'}.' '.$rPaquete{'tApellidos'}.' ('.$rPaquete{'tCorreo'}.')' : ''?>
+<div class="row">
+    <div class="col-lg-12">
+      <div class="card card-body">
+          <table class="table table-striped table-bordered">
+              <tr>
+                  <td>Empresa</td>
+                  <td><?=utf8_encode($rPromotoria{'tNombres'});?></td>
+                  <td>Fecha</td>
+                  <td><?=date('d/m/Y',strtotime($rPromotoria{'fhFechaPromotoria'}));?></td>
+              </tr>
+              <tr>
+                  <td>Coordinadores</td>
+                  <td colspan="3"></td>
+              </tr>
+              <? while($rCliente = mysql_fetch_array($rsClientes)){ ?>
+              <tr>
+                  <td></td>
+                  <td colspan="3"><?=utf8_encode($rCliente{'tNombre'}.($rCliente{'tApellidos'} ? ' '.$rCliente{'tApellidos'} : ''));?></td>
+              </tr>
+              <? } ?>
+              <tr>
+                  <td colspan="4" align="center"><b>Productos</b></td>
+              </tr>
+              <tr>
+                  <td colspan="2">Producto</td>
+                  <td colspan="2">Presentación</td>
+              </tr>
+              <? while($rProducto = mysql_fetch_array($rsProductos)){ ?>
+                  <tr>
+                      <td colspan="2"><?=utf8_encode($rProducto{'tProducto'});?></td>
+                      <td colspan="2"></td>
+                  </tr>
                   <?
-}
-    ?>
-      
-              
-               
-           </div>
-           <div class="form-group">
-              <label>Fecha del Evento</label>
-              <?=date('d/m/Y H:i',strtotime($rPublicacion{'fhFechaEvento'}))?>
-           </div>
-           <div class="form-group">
-              <label>Hora de Montaje</label>
-              <?=date('H:i',strtotime($rPublicacion{'tmHoraMontaje'}))?>
-           </div>
-           <div class="form-group">
-              <label>Direcci&oacute;n</label>
-              <?=nl2br(base64_decode(utf8_decode($rPublicacion{'tDireccion'})))?>
-           </div>
-           <div class="form-group">
-              <label>Observaciones</label>
-              <?=nl2br(base64_decode(utf8_decode($rPublicacion{'tObservaciones'})))?>
-           </div>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-        <div class="col-md-4">
-                <div class="main-card mb-3 card">
-                    <div class="card-body">
-                        <h5 class="card-title">Transacciones</h5>
-                        <div>
-                            <table class="table table-responsive table-borderless table-top-campaign">
-                                        <thead>
-                                            <tr>
-                                                <th></th>
-                                                <th>#</th>
-												<th>Fecha</th>
-												<th>Monto</th>
-												<th>Forma</th>
-                                            </tr>
-                                        </thead>
-										<tbody>
-											<?
-											$select = "SELECT bt.eCodTransaccion, bt.eCodTipoPago, bt.eCodEvento, bt.fhFecha, bt.dMonto, ctp.tNombre FROM BitTransacciones bt INNER JOIN CatTiposPagos ctp ON ctp.eCodTipoPago = bt.eCodTipoPago WHERE bt.tCodEstatus = 'AC' AND bt.eCodEvento = ".$_GET['v1'];
-											$rsTransacciones = mysql_query($select);
-											$i = 1;
-											while($rTransaccion = mysql_fetch_array($rsTransacciones))
-											{
-												?>
-											<tr>
-                                                <td>
-                                                    <? if($_SESSION['sessionAdmin']['bAll']) { ?>
-                                                    <i class="far fa-trash-alt" onclick="nuevaTransaccion(<?=$rTransaccion{'eCodEvento'};?>,<?=$rTransaccion{'eCodTransaccion'};?>,<?=$rTransaccion{'eCodTipoPago'};?>,<?=$rTransaccion{'dMonto'}?>,1);"></i>
-                                                    <? } ?>
-                                                    <i class="fas fa-pencil-alt" onclick="nuevaTransaccion(<?=$rTransaccion{'eCodEvento'};?>,<?=$rTransaccion{'eCodTransaccion'};?>,<?=$rTransaccion{'eCodTipoPago'};?>,<?=$rTransaccion{'dMonto'}?>);"></i>
-                                                </td>
-												<td><?=$i?></td>
-												<td><?=date('d/m/Y',strtotime($rTransaccion{'fhFecha'}))?></td>
-												<td>$<?=$rTransaccion{'dMonto'}?><input type="hidden" id="abono<?=$i?>" value="<?=$rTransaccion{'dMonto'}?>"></td>
-												<td><?=utf8_encode($rTransaccion{'tNombre'});?></td>
-											</tr>
-											<?
-                                                $i++;
-											}
-											?>
-											<tr>
-											<td colspan="3" align="right">Total abonado:</td>
-												<td id="totAbono"></td>
-											</tr>
-											<tr>
-											<td colspan="3" align="right">Restante:</td>
-												<td id="totRestante"></td>
-											</tr>
-										</tbody>
-                                    </table>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        <div class="clearfix"></div>
-        <div class="row">
-        <div class="col-md-12">
-                <div class="main-card mb-3 card">
-                    <div class="card-body">
-                        <h5 class="card-title">Art&iacute;culos</h5>
-                        <div>
-                            <table class="table table-responsive table-borderless table-top-campaign" width="100%">
-                                        <thead>
-                                            
-                                            <tr>
-                                                <th></th>
-												<th width="85%">Paquete</th>
-                                                <th>Cantidad</th>
-                                                <th>Precio</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-											<?
-                                            $i = 0;
-											$select = "	SELECT DISTINCT
-															cs.tNombre,
-                                                            cs.dPrecioVenta,
-                                                            rep.eCodServicio,
-                                                            rep.eCantidad,
-                                                            rep.dMonto
-                                                        FROM CatServicios cs
-                                                        INNER JOIN RelEventosPaquetes rep ON rep.eCodServicio = cs.eCodServicio and rep.eCodTipo = 1
-                                                        WHERE rep.eCodEvento = ".$_GET['v1'];
-											$rsPublicaciones = mysql_query($select);
-                                            
-											while($rPublicacion = mysql_fetch_array($rsPublicaciones))
-											{
-												?>
-											<tr id="paq<?=$i?>">
-                                                <td><b>PQ</b></td>
-                                                <td align="left">
-                                                    <?=$rPublicacion{'tNombre'}?>
-                                                    <input type="hidden" name="eCodServicio<?=$i?>" id="eCodServicio<?=$i?>" value="<?=$rPublicacion{'eCodServicio'}?>">
-                                                    <input type="hidden" name="eCantidad<?=$i?>" id="eCantidad<?=$i?>" value="<?=$rPublicacion{'eCantidad'}?>">
-                                                    <input type="hidden" name="eCodTipo<?=$i?>" id="eCodTipo<?=$i?>" value="<?=$rPublicacion{'eCodTipo'}?>">
-                                                </td>
-                                                <td align="center">
-                                                    <?=$rPublicacion{'eCantidad'}?>
-                                                </td>
-												<td>$<?=number_format($rPublicacion{'dMonto'},2)?><input type="hidden" id="totalServ<?=$i?>" value="<?=($rPublicacion{'dMonto'})?>"></td>
-                                            </tr>
-											<?
-											$i++;
-											}
-                                            $select = "	SELECT DISTINCT
-															cs.tNombre,
-                                                            cs.dPrecioVenta,
-                                                            rep.eCodServicio,
-                                                            rep.eCantidad,
-                                                            rep.dMonto
-                                                        FROM CatInventario cs
-                                                        INNER JOIN RelEventosPaquetes rep ON rep.eCodServicio = cs.eCodInventario and rep.eCodTipo = 2
-                                                        WHERE rep.eCodEvento = ".$_GET['v1'];
-											$rsPublicaciones = mysql_query($select);
-                                            
-											while($rPublicacion = mysql_fetch_array($rsPublicaciones))
-											{
-												?>
-											<tr id="paq<?=$i?>">
-                                                <td><b>PR</b></td>
-                                                <td align="left">
-                                                    <?=$rPublicacion{'tNombre'}?>
-                                                    <input type="hidden" name="eCodServicio<?=$i?>" id="eCodServicio<?=$i?>" value="<?=$rPublicacion{'eCodServicio'}?>">
-                                                    <input type="hidden" name="eCantidad<?=$i?>" id="eCantidad<?=$i?>" value="<?=$rPublicacion{'eCantidad'}?>">
-                                                    <input type="hidden" name="eCodTipo<?=$i?>" id="eCodTipo<?=$i?>" value="<?=$rPublicacion{'eCodTipo'}?>">
-                                                </td>
-                                                <td align="center">
-                                                    <?=$rPublicacion{'eCantidad'}?>
-                                                </td>
-												<td>$<?=number_format($rPublicacion{'dMonto'},2)?><input type="hidden" id="totalServ<?=$i?>" value="<?=($rPublicacion{'dMonto'})?>"></td>
-                                            </tr>
-											<?
-											$i++;
-											}
-											?>
-                                            <!--extras-->
-                                            <?
-                                            //$i = 0;
-											$select = "	SELECT *
-                                                        FROM RelEventosExtras
-                                                        WHERE eCodEvento = ".$_GET['v1'].
-                                                " ORDER BY bSuma ASC, tDescripcion DESC";
-											$rsPublicaciones = mysql_query($select);
-                                            
-											while($rPublicacion = mysql_fetch_array($rsPublicaciones))
-											{
-												?>
-											<tr id="ext<?=$i?>">
-                                                <td><b>EX</b></td>
-                                                <td align="left">
-                                                    <?=$rPublicacion{'tDescripcion'}?>
-                                                </td>
-                                                <td></td>
-                                                <td align="left">
-                                                    $<?=number_format($rPublicacion{'dImporte'},2)?><input type="hidden" id="totalServ<?=$i?>" value="<?=($rPublicacion{'dSuma'}!=1 ? $rPublicacion{'dImporte'} : 0)?>">
-                                                </td>
-												
-                                            </tr>
-                                            <? $i++; ?>
-                                            <? } ?>
-                                            
-                                            <!--desglose-->
-                                            <tr>
-												<td> <input type="hidden" id="totEvento" value="0"></td>
-											<td colspan="3" align="right" id="totalVenta"></td>
-											</tr>
-											
-											<tr <?=(($bIVA==1) ? '' : 'hidden');?>>
-												<td><input type="hidden" id="bIVA" value="<?=$bIVA;?>"></td>
-											<td colspan="3" align="right" id="totIVA"></td>
-											</tr>
-											
-											<tr <?=(($bIVA==1) ? '' : 'hidden');?>>
-												<td> </td>
-											<td colspan="3" align="right" id="totTotal"></td>
-											</tr>
-                                            <!--desglose-->
-                                        </tbody>
-                                    </table>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-    </form>
-   
-
-<script> 
-
-    function calcular()
-    {
-        var venta = 0, abono = 0;
-        var cmbTotal = document.querySelectorAll("[id^=totalServ]");
-        cmbTotal.forEach(function(nodo){
-            
-            venta = parseFloat(venta) + parseFloat(nodo.value);
-            
-        });
-		
-		var cmbAbono = document.querySelectorAll("[id^=abono]");
-        cmbAbono.forEach(function(nodo){
-            
-            abono = parseFloat(abono) + parseFloat(nodo.value);
-            
-        });
-        
-        var bIVA = document.getElementById('bIVA').value;
-        var total = venta;
-        if(bIVA==1)
-        {
-            document.getElementById('totalVenta').innerHTML = "Subtotal: $"+venta.toFixed(2);
-            var dIVA = (venta*0.16);
-            var total = venta+dIVA;
-            document.getElementById('totIVA').innerHTML = "IVA: $"+dIVA.toFixed(2);
-            
-            document.getElementById('totTotal').innerHTML = "Total: $"+total.toFixed(2);
-
-        }
-        else
-        {
-           document.getElementById('totalVenta').innerHTML = "Total: $"+venta.toFixed(2); 
-        }
-        
-		document.getElementById('totAbono').innerHTML = "$"+abono.toFixed(2);
-		document.getElementById('totRestante').innerHTML = "$"+(total-abono).toFixed(2); 
-    }
-	
-	calcular();
-
-		</script>
+                  $select = "SELECT DISTINCT ct.eCodPresentacion, ct.tNombre tPresentacion FROM RelPromotoriasPresentaciones rp 
+                   INNER JOIN CatPresentaciones ct ON ct.eCodPresentacion=rp.eCodPresentacion WHERE rp.eCodPromotoria = ".$rPromotoria{'eCodPromotoria'}." AND rp.eCodProducto = ".$rProducto{'eCodProducto'}." ORDER BY ct.eCodPresentacion ASC";
+                   $rsPresentaciones = mysql_query($select);
+                   while($rPresentacion = mysql_fetch_array($rsPresentaciones)){ ?>
+                    <tr>
+                     <td></td>
+                      <td><?=utf8_encode($rPresentacion{'tPresentacion'});?></td>
+                      <td colspan="2"></td>
+                  </tr>   
+                   <? } ?>
+              <? } ?>
+              <tr>
+                  <td colspan="4" align="center"><b>Supervisor(es)</b></td>
+              </tr>
+              <tr>
+                  <td>Supervisor</td>
+                  <td>Demovendedor</td>
+                  <td colspan="2">Tienda</td>
+              </tr>
+              <? while($rSupervisor = mysql_fetch_array($rsSupervisores)){ ?>
+                  <tr>
+                      <td><?=utf8_encode($rSupervisor{'tNombre'}.' '.$rSupervisor{'tApellidos'});?></td>
+                      <td colspan="3"></td>
+                  </tr>
+                  <?
+                  $select = "SELECT su.eCodUsuario, su.tNombre, su.tApellidos,
+	               ct.eCodTienda, ct.tNombre tTienda 
+                   FROM SisUsuarios su 
+                   INNER JOIN RelPromotoriasPromotores rs ON rs.eCodPromotor=su.eCodUsuario 
+                   INNER JOIN CatTiendas ct ON ct.eCodTienda = rs.eCodTienda WHERE rs.eCodPromotoria = ".$rSupervisor{'eCodPromotoria'}.
+                    " AND rs.eCodSupervisor = ".$rSupervisor{'eCodUsuario'};
+                    $rsPromotores = mysql_query($select);
+                    while($rPromotor = mysql_fetch_array($rsPromotores)){ ?>
+                     <tr>
+                         <td></td>
+                         <td><?=utf8_encode($rPromotor{'tNombre'}.' '.$rPromotor{'tApellidos'});?></td>
+                         <td colspan="2"><?=utf8_encode($rPromotor{'tTienda'});?></td>
+                     </tr>
+                    <? } ?>
+              <? } ?>
+          </table>
+      </div>  
+    </div>
+</div>

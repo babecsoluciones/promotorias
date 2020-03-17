@@ -24,11 +24,11 @@ $data = json_decode( file_get_contents('php://input') );
         
         $eCodCliente            = $data->eCodCliente ? $data->eCodCliente : false;
         $tNombre                = $data->tNombre ? "'".utf8_encode($data->tNombre)."'" : false;
-        $tApellidos             = $data->tApellidos ? "'".utf8_encode($data->tApellidos)."'" : false;
-        $tCorreo                = $data->tCorreo ? "'".$data->tCorreo."'" : false;
-        $tTelefonoFijo          = $data->tTelefonoFijo ? "'".$data->tTelefonoFijo."'" : false;
-        $tTelefonoMovil         = $data->tTelefonoMovil ? "'".$data->tTelefonoMovil."'" : false;
-        $tComentarios           = $data->tComentarios ? "'".utf8_encode($data->tComentarios)."'" : "'Sin comentarios'";
+        $tApellidos             = "'-'";
+        $tCorreo                = "'-'";
+        $tTelefonoFijo          = "'-'";
+        $tTelefonoMovil         = "'-'";
+        $tComentarios           = "'-'";
 		$eCodUsuario            = $_SESSION['sessionAdmin']['eCodUsuario'];
 		$fhFechaCreacion        = "'".date('Y-m-d H:i')."'";
 
@@ -38,14 +38,14 @@ $data = json_decode( file_get_contents('php://input') );
         //if(!$tApellidos)
         //    $errores[] = 'Los Apellidos es obligatorio';
 
-        if(!$tCorreo)
+        /*if(!$tCorreo)
             $errores[] = 'El e-mail es obligatorio';
 
         if(!$tTelefonoFijo)
             $errores[] = 'El telefono fijo es obligatorio';
 
         if(!$tTelefonoMovil)
-            $errores[] = 'El telefono movil es obligatorio';
+            $errores[] = 'El telefono movil es obligatorio';*/
 
         
         if(!sizeof($errores))

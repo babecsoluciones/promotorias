@@ -78,8 +78,7 @@ switch($accion)
         '<th>C&oacute;digo</th>'.
 		'<th>E</th>'.
         '<th>Nombre</th>'.
-        '<th class="text-left">Correo</th>'.
-        '<th class="text-left">Tel&eacute;fono</th>'.
+        
         '</tr>'.
         '</thead>'.
         '<tbody>';
@@ -109,8 +108,7 @@ switch($accion)
         '<td>'.menuEmergenteJSON($rConsulta{'eCodCliente'},'cata-cli-con').'</td>'.
         '<td><i class="'.$rConsulta{'estatus'}.'"></i></td>'.
         '<td>'.utf8_encode($rConsulta{'tTitulo'}).''.utf8_encode($rConsulta{'tNombres'}).'</td>'.
-		'<td>'.utf8_encode($rConsulta{'tCorreo'}).'</td>'.
-		'<td>'.utf8_encode($rConsulta{'tTelefonoFijo'}).'</td>'.
+		
                     '</tr>';
             //imprimimos
         }

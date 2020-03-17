@@ -39,7 +39,7 @@ if($_GET['bEliminar'])
 														LEFT JOIN SisPerfiles cp ON cp.eCodPerfil = cc.eCodPerfil".
 										" WHERE 1=1 ".
 										($_SESSION['sessionAdmin']['bAll'] ? "" : " AND cc.eCodEstatus <>7 ").
-										($_SESSION['sessionAdmin']['bAll'] ? "" : " AND cc.eCodPerfil > 1 ").
+										($_SESSION['sessionAdmin']['bAll'] ? "" : " AND cc.eCodPerfil > 2 ").
 														" ORDER BY cc.eCodUsuario ASC";
 											
 											$rsPublicaciones = mysql_query($select);

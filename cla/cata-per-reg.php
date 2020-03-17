@@ -54,10 +54,11 @@ $data = json_decode( file_get_contents('php://input') );
 		$tCodSeccion = $secciones->tCodSeccion ? "'".$secciones->tCodSeccion."'" : false;
 		$bAll = $secciones->bAll ? $secciones->bAll : 0;
         $bDelete = $secciones->bDelete ? $secciones->bDelete : 0;
+        $bWrite = $secciones->bWrite ? $secciones->bWrite : 0;
         
         if($tCodSeccion)
         { 
-            $insert = "INSERT INTO SisSeccionesPerfiles (eCodPerfil, tCodSeccion, bAll, bDelete) VALUES ($eCodPerfil, $tCodSeccion, $bAll, $bDelete)";
+            $insert = "INSERT INTO SisSeccionesPerfiles (eCodPerfil, tCodSeccion, bAll, bDelete, bWrite ) VALUES ($eCodPerfil, $tCodSeccion, $bAll, $bDelete, $bWrite)";
             fwrite($pf,$insert."\n");
             $rs = mysql_query($insert);
 

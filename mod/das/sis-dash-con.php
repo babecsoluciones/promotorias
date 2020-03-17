@@ -9,17 +9,17 @@ session_start();
 $bAll = $_SESSION['bAll'];
 $bDelete = $_SESSION['bDelete'];
 
+date_default_timezone_set('America/Mexico_City');
 
-$select =   " SELECT cc.tNombre tCliente, bp.eCodPromotoria, ".
+$select =   " SELECT cc.tNombres tCliente, bp.eCodPromotoria, ".
             " bp.fhFechaPromotoria, ce.tIcono estatus".
             " FROM BitPromotoria bp ".
             " INNER JOIN CatClientes cc ON cc.eCodCliente = bp.eCodCliente ".
             " INNER JOIN CatEstatus ce ON ce.eCodEstatus = bp.eCodEstatus ".
-            " INNER JOIN RelPromotoriasClientes pc ON pc.eCodPromotoria = bp.eCodPromotoria ".
-            " INNER JOIN RelPromotoriasPromotores pp ON pp.eCodPromotoria = bp.eCodPromotoria ".
-            " INNER JOIN RelPromotoriasSupervisores ON ps.eCodPromotoria = bp.eCodPromotoria ".
-            " WHERE DATE(bp.fhFechaPromotoria) >= '".date('Y-m-d H:i:s')."'".
-            ($bAll ? "" : " AND ".$_SESSION['sessionAdmin']['eCodUsuario']." IN pc.eCodUsuario, pp.eCodPromotor, ps.eCodSupervisor ");
+            (!$bAll && $_SESSION['sessionAdmin']['ecodPerfil']==5 ? " INNER JOIN RelPromotoriasClientes pc ON pc.eCodPromotoria = bp.eCodPromotoria AND pc.eCodUsuario = ".$_SESSION['sessionAdmin']['eCodUsuario'] : "").
+            (!$bAll && $_SESSION['sessionAdmin']['ecodPerfil']==4 ? " INNER JOIN RelPromotoriasPromotores pp ON pp.eCodPromotoria = bp.eCodPromotoria AND pp.eCodPromotor = ".$_SESSION['sessionAdmin']['eCodUsuario'] : "").
+            (!$bAll && $_SESSION['sessionAdmin']['ecodPerfil']==3 ? " INNER JOIN RelPromotoriasSupervisores ps ON ps.eCodPromotoria = bp.eCodPromotoria AND ps.eCodSupervisor = ".$_SESSION['sessionAdmin']['eCodUsuario'] : "").
+            " WHERE DATE(bp.fhFechaPromotoria) >= '".date('Y-m-d')."'";
 $rsConsulta = mysql_query($select);
 
 ?>
@@ -27,8 +27,8 @@ $rsConsulta = mysql_query($select);
 <div class="row">
 <!--calendario-->
     <div class="col-lg-12">
-                                <h2 class="title-1 m-b-25">Perfiles</h2>
-                                <div class="table-responsive table--no-card m-b-40">
+                                
+                                <div class="table-responsive table--no-card m-b-40" style="min-height:500px">
                                     <table class="table table-borderless table-striped table-earning">
                                         <thead>
                                             <tr>
@@ -46,7 +46,7 @@ $rsConsulta = mysql_query($select);
 											<tr>
                                             <td><?=menuEmergente($rConsulta{'eCodPromotoria'});?></td>
                                             <td><i class="<?=$rConsulta{'estatus'};?>"></i></td>
-                                            <td><?=utf8_encode($rConsulta{'tCliente'});?>.'</td>
+                                            <td><?=utf8_encode($rConsulta{'tCliente'});?></td>
                                             <td><?=date('d/m/Y',strtotime($rConsulta{'fhFechaPromotoria'}));?></td>
                                             </tr>
 											<?

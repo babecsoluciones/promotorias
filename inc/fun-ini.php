@@ -85,7 +85,7 @@ date_default_timezone_set('America/America/Mexico_City');
                     FROM 
                         SisSeccionesBotones ssb 
                     INNER JOIN SisBotones sb on sb.tCodBoton=ssb.tCodBoton 
-                    $join JOIN SisSeccionesPerfiles ssp ON ssp.tCodSeccion=ssb.tCodPadre 
+                    $join JOIN SisSeccionesPerfiles ssp ON ssp.tCodSeccion=ssb.tCodSeccion 
                     $join JOIN SisSeccionesPerfiles sss on sss.tCodSeccion=ssb.tCodSeccion 
                     WHERE
                     1=1 ".
@@ -135,7 +135,7 @@ date_default_timezone_set('America/America/Mexico_City');
                         ssb.ePosicion
                     FROM 
                         SisSeccionesMenusEmergentes ssb 
-                    $join JOIN SisSeccionesPerfiles ssp ON ssp.tCodSeccion=ssb.tCodPadre 
+                    $join JOIN SisSeccionesPerfiles ssp ON ssp.tCodSeccion=ssb.tCodSeccion 
                     $join JOIN SisSeccionesPerfiles sss on sss.tCodSeccion=ssb.tCodSeccion 
                     WHERE
                     1=1 ".
@@ -189,7 +189,7 @@ date_default_timezone_set('America/America/Mexico_City');
                         ssb.ePosicion
                     FROM 
                         SisSeccionesMenusEmergentes ssb 
-                    $join JOIN SisSeccionesPerfiles ssp ON ssp.tCodSeccion=ssb.tCodPadre 
+                    $join JOIN SisSeccionesPerfiles ssp ON ssp.tCodSeccion=ssb.tCodSeccion 
                     $join JOIN SisSeccionesPerfiles sss on sss.tCodSeccion=ssb.tCodSeccion 
                     WHERE
                     1=1 ".

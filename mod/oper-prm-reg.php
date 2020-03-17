@@ -26,7 +26,7 @@ function supervisores($indice,$datos)
 	ct.eCodTienda,
 	ct.tNombre tTienda FROM SisUsuarios su INNER JOIN RelPromotoriasPromotores rs ON rs.eCodPromotor=su.eCodUsuario INNER JOIN CatTiendas ct ON ct.eCodTienda = rs.eCodTienda WHERE rs.eCodPromotoria = ".$datos{'eCodPromotoria'}.
     " AND rs.eCodSupervisor = ".$datos{'eCodUsuario'};
-    
+    print $select;
     $rsPromotores = mysql_query($select);
     $j = 0;
     while($rPromotor = mysql_fetch_array($rsPromotores)){
@@ -56,7 +56,7 @@ function promotores($indice,$fila,$datos)
           </td>
           <td>
 
-    <input type="hidden" id="eCodTienda<?=$indice;?>-<?=$fila;?>" name="promotores[<?=$indice;?>][<?=$fila;?>][eCodTienda]" value="<?=$datos['eCodTienda'];?>">
+    <input type="hidden" id="eCodTienda<?=$indice;?>-<?=$fila;?>" name="promotores[<?=$indice;?>][<?=$fila;?>][eCodTienda]" value="'.$datos['eCodTienda'].'">
     <input type="text" class="form-control" id="tTienda<?=$indice;?>-<?=$fila;?>" name="promotores[<?=$indice;?>][<?=$fila;?>][tTienda]" onkeyup="agregarTienda(<?=$indice;?>,<?=$fila;?>)" onkeypress="agregarTienda(<?=$indice;?>,<?=$fila;?>)" onblur="validarPromotor(<?=$indice;?>,<?=$fila;?>)" placeholder="Tienda" value="<?=$datos['tTienda'];?>" autocomplete="off">
   
           </td>

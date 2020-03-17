@@ -95,6 +95,9 @@ funcion validar()
 															<label>A <input type="checkbox" id="bAll0" name="secciones[0][bAll]" value="1" <?=$rPerDash{'bAll'} ? 'checked' : ''?>  onclick="seleccionarSeccion(0)"></label>
                                                         </td>
                                                         <td align="right">
+															<label>W <input type="checkbox" id="bWrite0" name="secciones[0][bWrite]" value="1" <?=$rPerDash{'bDelete'} ? 'checked' : ''?>  onclick="seleccionarSeccion(0)"></label>
+                                                        </td>
+                                                        <td align="right">
 															<label>D <input type="checkbox" id="bDelete0" name="secciones[0][bDelete]" value="1" <?=$rPerDash{'bDelete'} ? 'checked' : ''?>  onclick="seleccionarSeccion(0)"></label>
                                                         </td>
 														
@@ -117,6 +120,8 @@ funcion validar()
 														
 															<td align="right"><label>A <input type="checkbox" id="bAll<?=$b?>" name="secciones[<?=$b?>][bAll]" value="1" <?=$rSeccionPerfil{'bAll'} ? 'checked' : ''?>   onclick="seleccionarSeccion(<?=$b;?>)"></label></td>
 															
+                                                        <td align="right"><label>W <input type="checkbox" id="bWrite<?=$b;?>" name="secciones[<?=$b?>][bWrite]" value="1" <?=$rSeccionPerfil{'bWrite'} ? 'checked' : ''?>  onclick="seleccionarSeccion(<?=$b;?>)"></label></td>
+                                                        
                                                         <td align="right"><label>D <input type="checkbox" id="bDelete<?=$b;?>" name="secciones[<?=$b?>][bDelete]" value="1" <?=$rSeccionPerfil{'bDelete'} ? 'checked' : ''?>  onclick="seleccionarSeccion(<?=$b;?>)"></label></td>
                                                     </tr>
 													
@@ -143,6 +148,8 @@ funcion validar()
 														
 															<td align="right"><label>A <input type="checkbox" id="bAll<?=$b?>" name="secciones[<?=$b?>][bAll]" value="1" <?=$rSeccionPerfil2{'bAll'} ? 'checked' : ''?>   onclick="seleccionarSeccion(<?=$b;?>)"></label></td>
 															
+                                                        <td align="right"><label>W <input type="checkbox" id="bWrite<?=$b;?>" name="secciones[<?=$b?>][bWrite]" value="1" <?=$rSeccionPerfil{'bWrite'} ? 'checked' : ''?>  onclick="seleccionarSeccion(<?=$b;?>)"></label></td>
+                                                       
                                                         <td align="right"><label>D <input type="checkbox" id="bDelete<?=$b?>" name="secciones[<?=$b?>][bDelete]" value="1" <?=$rSeccionPerfil2{'bDelete'} ? 'checked' : ''?>  onclick="seleccionarSeccion(<?=$b;?>)"></label></td>
                                                                 <!--permisos-->
 															
@@ -168,9 +175,11 @@ function seleccionarFila(indice)
     {
         var tCodSeccion = document.getElementById('tCodSeccion'+indice),
             bAll = document.getElementById('bAll'+indice),
+            bWrite = document.getElementById('bWrite'+indice),
             bDelete = document.getElementById('bDelete'+indice);
         
         bAll.checked    = (tCodSeccion.checked==true) ? true : false;
+        bWrite.checked  = (tCodSeccion.checked==true) ? true : false;
         bDelete.checked = (tCodSeccion.checked==true) ? true : false;
     }
 
@@ -178,8 +187,11 @@ function seleccionarSeccion(indice)
     {
         var tCodSeccion = document.getElementById('tCodSeccion'+indice),
             bAll = document.getElementById('bAll'+indice),
+            bWrite = document.getElementById('bWrite'+indice),
             bDelete = document.getElementById('bDelete'+indice);
         
-        tCodSeccion.checked = ((bAll.checked==true && bDelete.checked==false) || (bAll.checked==false && bDelete.checked==true) || (bAll.checked==true && bDelete.checked==true)) ? true : false;
+        tCodSeccion.checked = (
+            (bAll.checked==true || bDelete.checked==true || bWrite.checked==true)
+        ) ? true : false;
     }
 </script>
